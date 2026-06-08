@@ -13,6 +13,7 @@ from .logic import LogicPhase
 from .storage_phase import StoragePhase
 from .narrate import NarratePhase
 from .assassin_phase import AssassinPhase
+from .cognitive_crack import CognitiveCrackPhase
 
 
 class FullPrismPipeline(PrismPipeline):
@@ -39,6 +40,9 @@ class FullPrismPipeline(PrismPipeline):
         # V4.0 数字分身（可选，默认开，从 V1.0 移过来）
         if self.config.include_digital_twin:
             phases.append(TwinPhase())
+        # V4.0 裂缝捕捉（可选，默认开）
+        if self.config.include_crack_capture:
+            phases.append(CognitiveCrackPhase())
         # 必经
         phases += [
             StoragePhase(),
@@ -53,4 +57,5 @@ __all__ = [
     "IntentPhase", "GatewayPhase", "BackupCheckPhase", "PrismPhase",
     "RealityPhase", "TwinPhase", "CCOSPhase", "GapPhase",
     "LogicPhase", "StoragePhase", "NarratePhase", "AssassinPhase",
+    "CognitiveCrackPhase",
 ]

@@ -1,0 +1,13 @@
+llm_api:
+  url: "http://localhost:3000/v1/chat/completions"
+  key: "${GATEWAY_AUTH_KEY}"
+
+search_api:
+  url: "https://serper.dev/api/search"
+  key: "${SEARCH_API_KEY}"
+
+digital_twin:
+  enabled: "true"
+  thinking_pattern: "理性、克制、反常识"
+  auto_learn: "true"
+  calibration_interval: "50"

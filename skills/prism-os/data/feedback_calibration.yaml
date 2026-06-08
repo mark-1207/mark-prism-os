@@ -1,0 +1,28 @@
+by_platform_module_combo:
+  wechat:
+    ACTION,BOUNDARY,CASE,COUNTER,EVIDENCE,EXPLAIN,HOOK,MODEL:
+      avg_engagement: 0.1164
+      sample_size: 1
+    ACTION,CASE,EVIDENCE,HOOK:
+      avg_engagement: 0.1183
+      sample_size: 2
+    ACTION,CASE,EVIDENCE,HOOK,MODEL:
+      avg_engagement: 0.1112
+      sample_size: 1
+    CASE,EVIDENCE,EXPLAIN,HOOK:
+      avg_engagement: 0.0992
+      sample_size: 1
+  xiaohongshu:
+    ACTION,CASE,HOOK,MODEL:
+      avg_engagement: 0.1416
+      sample_size: 2
+by_platform_strategy:
+  wechat:
+    数据驱动型:
+      avg_engagement: 0.1118
+      confidence_high: 0.1206
+      confidence_low: 0.1029
+      sample_size: 4
+  xiaohongshu: {}
+last_updated: '2026-06-08T11:00:07.040834'
+sample_size: 7

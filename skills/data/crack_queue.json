@@ -1,0 +1,118 @@
+[
+  {
+    "title": "AI让程序员失业率上升30%",
+    "source": "36氪",
+    "source_link": "https://36kr.com/p/123456",
+    "crack_type": "数据裂缝",
+    "consensus": "AI会创造更多就业机会",
+    "reality": "AI导致程序员失业率上升30%",
+    "confidence": 0.85,
+    "signals": {
+      "trend": "程序员职业安全感正在崩塌",
+      "emotion": [
+        "替代焦虑",
+        "身份危机"
+      ],
+      "contradiction": "AI 提高生产力，但降低普通内容价值",
+      "homogenization_alert": "否"
+    },
+    "expression_angles": [
+      {
+        "type": "认知型创作者",
+        "angle": "AI对普通程序员的影响：身份危机",
+        "resonance": 0.9
+      },
+      {
+        "type": "商业型创作者",
+        "angle": "AI 时代人力结构变化",
+        "resonance": 0.7
+      }
+    ],
+    "id": "77a4d2c5-6cdc-45a0-b087-9297aebf54a0",
+    "created_at": "2026-05-21T15:55:06.348412",
+    "status": "consumed",
+    "manual_tags": [],
+    "notes": "",
+    "consumed_by": "run_from_queue",
+    "priority_score": 0.85
+  },
+  {
+    "title": "程序员不需要学算法了",
+    "source": "知乎",
+    "crack_type": "视角裂缝",
+    "consensus": "程序员必须学好算法才能找到好工作",
+    "reality": "AI时代算法知识正在贬值，实际项目能力更重要",
+    "confidence": 0.78,
+    "signals": {
+      "trend": "技术教育正在被重新定义",
+      "emotion": [
+        "身份危机",
+        "焦虑"
+      ],
+      "contradiction": "会写代码不等于能写好代码",
+      "homogenization_alert": "不确定"
+    },
+    "id": "a420f25c-9d05-434f-ba4c-fde9afba95bf",
+    "created_at": "2026-05-21T16:15:34.106359",
+    "status": "consumed",
+    "manual_tags": [],
+    "notes": "",
+    "consumed_by": "run_from_queue",
+    "priority_score": 0.78
+  },
+  {
+    "title": "程序员职业发展面临AI挑战",
+    "source": "36氪",
+    "crack_type": "数据裂缝",
+    "consensus": "AI会创造更多就业机会",
+    "reality": "AI导致部分程序员失业率上升",
+    "confidence": 0.82,
+    "signals": {
+      "trend": "程序员职业安全感正在被重塑",
+      "emotion": [
+        "替代焦虑",
+        "身份危机"
+      ],
+      "contradiction": "AI 提高生产力，但降低普通内容价值",
+      "homogenization_alert": "否"
+    },
+    "expression_angles": [
+      {
+        "type": "认知型创作者",
+        "angle": "AI对程序员的影响：身份危机视角",
+        "resonance": 0.9
+      }
+    ],
+    "id": "4eb4c69f-cd8a-4ed1-85fd-379ab5e1217d",
+    "created_at": "2026-05-21T17:05:41.942645",
+    "status": "consumed",
+    "manual_tags": [],
+    "notes": "",
+    "consumed_by": "run_from_queue",
+    "priority_score": 0.82
+  },
+  {
+    "title": "程序员在AI时代如何保持竞争力",
+    "source": "36氪",
+    "crack_type": "数据裂缝",
+    "consensus": "程序员应该不断学习新技术",
+    "reality": "技术更新太快，学习速度跟不上AI替代的步伐",
+    "confidence": 0.82,
+    "signals": {
+      "trend": "技术人职业焦虑加剧",
+      "emotion": [
+        "焦虑",
+        "替代感"
+      ],
+      "contradiction": "学不完的新技术 vs 有限的精力 vs AI替代威胁",
+      "homogenization_alert": "否"
+    },
+    "id": "1b4d046e-297a-463d-a84f-e5cbb34cc923",
+    "created_at": "2026-05-21T17:13:31.925080",
+    "status": "consumed",
+    "manual_tags": [],
+    "notes": "",
+    "consumed_by": "run_from_queue",
+    "priority_score": 0.82
+  }
+]

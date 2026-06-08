@@ -1,0 +1,284 @@
+# CCOS v2.0 配置文件
+# 结构/内容目标/推进方式/模块要求的映射规则，支持动态调整无需改代码
+
+# ============================================================
+# 四大主结构
+# ============================================================
+
+structures:
+  认知升级型:
+    description: "旧认知 → 现实冲突 → 真正原因 → 新理解 → 新行动"
+    applies_to: [观点型, 趋势型]
+    content_goals: [认知升级, 观点表达]
+    progression: [递进推进, 冲突推进]
+    platform_weight:
+      wechat: 5
+      xiaohongshu: 3
+    module_requirements:
+      must_have: [HOOK, EXPLAIN, MODEL]
+      should_have: [CASE, COUNTER]
+      optional: [EVIDENCE, ACTION, BOUNDARY]
+    reasoning: "这类内容本质是推翻旧认知，必须有完整的认知推翻路径"
+
+  问题拆解型:
+    description: "问题表象 → 错误路径 → 真正卡点 → 关键原理 → 正确步骤"
+    applies_to: [方法型, 行业型]
+    content_goals: [实操教学, 趋势分析]
+    progression: [拆解推进, 案例推进]
+    platform_weight:
+      wechat: 4
+      xiaohongshu: 4
+    module_requirements:
+      must_have: [HOOK, ACTION, EXPLAIN]
+      should_have: [CASE, MODEL]
+      optional: [EVIDENCE, COUNTER, BOUNDARY]
+    reasoning: "读者目的是拿到就能用，拆解型结构正好满足路径需求"
+
+  故事驱动型:
+    description: "具体瞬间 → 情绪冲突 → 意识变化 → 普遍问题"
+    applies_to: [情绪型, 行业型]
+    content_goals: [情绪共鸣, 身份认同, 转化成交]
+    progression: [情绪推进, 对比推进]
+    platform_weight:
+      wechat: 3
+      xiaohongshu: 5
+    module_requirements:
+      must_have: [HOOK, CASE]
+      should_have: [EXPLAIN, ACTION, BOUNDARY]
+      optional: [MODEL, EVIDENCE, COUNTER]
+    reasoning: "情感类内容必须先建立代入感，故事是最快的方式"
+
+  信息重构型:
+    description: "大量现象 → 分类 → 规律 → 模型 → 反直觉结论"
+    applies_to: [行业型, 趋势型]
+    content_goals: [信息整理, 趋势分析]
+    progression: [对比推进, 递进推进]
+    platform_weight:
+      wechat: 4
+      xiaohongshu: 2
+    module_requirements:
+      must_have: [HOOK, EXPLAIN, MODEL]
+      should_have: [EVIDENCE, COUNTER]
+      optional: [CASE, ACTION, BOUNDARY]
+    reasoning: "把海量信息提炼成认知框架，读者获得豁然感"
+
+# ============================================================
+# 八种内容目标
+# ============================================================
+
+content_goals:
+  认知升级:
+    description: "改变读者理解"
+    recommended_structure: 认知升级型
+    priority: 5
+    platform_weight:
+      wechat: 5
+      xiaohongshu: 2
+
+  情绪共鸣:
+    description: "建立代入感"
+    recommended_structure: 故事驱动型
+    priority: 4
+    platform_weight:
+      wechat: 2
+      xiaohongshu: 5
+
+  实操教学:
+    description: "提供路径方法"
+    recommended_structure: 问题拆解型
+    priority: 5
+    platform_weight:
+      wechat: 4
+      xiaohongshu: 4
+
+  趋势分析:
+    description: "建立判断力"
+    recommended_structure: 信息重构型
+    priority: 4
+    platform_weight:
+      wechat: 5
+      xiaohongshu: 2
+
+  观点表达:
+    description: "输出立场"
+    recommended_structure: 认知升级型
+    priority: 4
+    platform_weight:
+      wechat: 5
+      xiaohongshu: 3
+
+  信息整理:
+    description: "降低理解成本"
+    recommended_structure: 信息重构型
+    priority: 3
+    platform_weight:
+      wechat: 4
+      xiaohongshu: 1
+
+  身份认同:
+    description: "建立群体感"
+    recommended_structure: 故事驱动型
+    priority: 3
+    platform_weight:
+      wechat: 2
+      xiaohongshu: 5
+
+  转化成交:
+    description: "建立信任"
+    recommended_structure: 故事驱动型
+    priority: 4
+    platform_weight:
+      wechat: 4
+      xiaohongshu: 4
+
+# ============================================================
+# 六种推进方式
+# ============================================================
+
+progression_methods:
+  递进推进:
+    description: "层层深入"
+    best_with: [认知升级型, 信息重构型]
+    module_hint: "每段比前一段认知层级更高"
+
+  拆解推进:
+    description: "模块化拆解"
+    best_with: [问题拆解型]
+    module_hint: "模块之间逻辑关系清晰"
+
+  情绪推进:
+    description: "情绪曲线驱动"
+    best_with: [故事驱动型]
+    module_hint: "按焦虑→共鸣→清晰的情绪弧线安排"
+
+  对比推进:
+    description: "强反差"
+    best_with: [信息重构型]
+    module_hint: "A vs B 的对比制造张力"
+
+  冲突推进:
+    description: "认知碰撞"
+    best_with: [认知升级型]
+    module_hint: "制造认知落差，先让用户以为是A再揭示B"
+
+  案例推进:
+    description: "从案例抽象"
+    best_with: [问题拆解型]
+    module_hint: "案例承载步骤，让抽象方法具体化"
+
+# ============================================================
+# 认知模块定义
+# ============================================================
+
+cognitive_modules:
+  HOOK:
+    name: "制造停留"
+    description: "用钩子让读者停下来，产生好奇或共鸣"
+    requirement: 必须有
+    length_hint: "20字以内一句话"
+
+  CASE:
+    name: "建立真实感"
+    description: "具体场景或人物案例，建立代入感"
+    requirement: 至少有1个
+    length_hint: "2-3句具体描述"
+
+  EXPLAIN:
+    name: "建立理解"
+    description: "对案例或观点进行解读"
+    requirement: 每篇必备
+    length_hint: "2-3句分析"
+
+  MODEL:
+    name: "提升认知密度"
+    description: "提炼可复用的认知模型或框架"
+    requirement: 至少有1个认知模型
+    length_hint: "3-5句，含模型名称和框架"
+
+  COUNTER:
+    name: "制造记忆点"
+    description: "反直觉观点，建立记忆点"
+    requirement: 建议有
+    length_hint: "2-3句反直觉内容"
+
+  EVIDENCE:
+    name: "增强可信度"
+    description: "数据、案例、引用支撑观点"
+    requirement: 支撑必须有
+    length_hint: "数据或案例描述"
+
+  ACTION:
+    name: "提供落地"
+    description: "给出具体行动步骤"
+    requirement: 实操类必须有
+    length_hint: "步骤化描述"
+
+  BOUNDARY:
+    name: "提升高级感"
+    description: "说明观点的适用边界"
+    requirement: 建议有
+    length_hint: "1-2句边界条件"
+
+# ============================================================
+# 平台差异配置
+# ============================================================
+
+platform_profiles:
+  wechat:
+    focus: "逻辑推进 / 认知升级 / 信息密度"
+    tone: "深度 / 理性 / 逻辑严密"
+    style: "更像思想产品"
+    key_modules: [HOOK, EXPLAIN, MODEL, COUNTER]
+    length_hint: "3000-5000字"
+
+  xiaohongshu:
+    focus: "情绪冲击 / 场景代入 / 高频刺激"
+    tone: "视觉化 / 情绪化 / 可操作"
+    style: "更像情绪化信息产品"
+    key_modules: [HOOK, CASE, ACTION, BOUNDARY]
+    length_hint: "800-1200字"
+
+# ============================================================
+# 难度系数（用于 Gap Analysis 阈值计算）
+# ============================================================
+
+dimension_difficulty:
+  reversal: 1.2    # 逆向拆解：需要强证据推翻常识
+  micro_scene: 1.0  # 微观切片：部分可推理补充
+  systemic_flaw: 1.2 # 系统归因：需要结构化分析框架
+  bridge: 0.8       # 认知脚手架：素材门槛较低
+
+# ============================================================
+# Gap Analysis 阈值配置
+# ============================================================
+
+gap_thresholds:
+  red_interrupt: 0.3     # < 0.3 红色中断
+  yellow_warning: 0.6     # 0.3 - 0.6 黄色警告
+  green_pass: 0.6        # >= 0.6 绿色通过
+  # 注：0.3-0.6 区间为黄色警告，需要用户确认后继续
+
+# ============================================================
+# A类/B类证据权重（用于综合就绪度计算）
+# ============================================================
+
+evidence_weights:
+  # A类：有据可查型（数据、案例、新闻）- 可通过搜索获取
+  type_a_weight: 0.3
+  # B类：个人认知型（分析框架、观点、深度解读）- 必须来自个人积累
+  type_b_weight: 0.7
+
+# ============================================================
+# Layer 0 七类追问平台差异配置
+# ============================================================
+
+alignment_questions:
+  wechat:
+    emphasis: [立场追问, 反直觉追问, 边界追问]
+    reason: "公众号偏深度，需要明确立场和边界"
+  xiaohongshu:
+    emphasis: [案例追问, 情绪追问, 用户画像追问]
+    reason: "小红书偏共鸣，需要具体场景和情绪连接"
+  both:
+    emphasis: [方向追问, 立场追问, 案例追问, 情绪追问, 反直觉追问, 用户画像追问, 边界追问]
+    reason: "两者都要，覆盖最完整"

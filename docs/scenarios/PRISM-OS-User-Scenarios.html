@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRISM-OS 用户场景全流程</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: #0d1117; color: #e6edf3; line-height: 1.7; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+  h1 { font-size: 2em; text-align: center; margin-bottom: 8px; color: #58a6ff; }
+  .subtitle { text-align: center; color: #8b949e; margin-bottom: 40px; font-size: 0.95em; }
+  h2 { color: #79c0ff; margin: 36px 0 16px; font-size: 1.3em; border-left: 4px solid #388bfd; padding-left: 12px; }
+  h3 { color: #d2a8ff; margin: 20px 0 10px; font-size: 1.05em; }
+  .nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 36px; }
+  .nav a { background: #161b22; border: 1px solid #30363d; color: #8b949e; padding: 8px 18px; text-decoration: none; border-radius: 6px; font-size: 0.88em; transition: all 0.2s; }
+  .nav a:hover, .nav a.active { border-color: #58a6ff; color: #58a6ff; }
+  .scenario { background: #161b22; border: 1px solid #30363d; border-radius: 12px; margin-bottom: 40px; overflow: hidden; }
+  .scenario-header { background: #1c2128; padding: 20px 28px; border-bottom: 1px solid #30363d; }
+  .scenario-num { display: inline-block; background: #388bfd22; border: 1px solid #388bfd; color: #79c0ff; font-size: 0.75em; padding: 2px 10px; border-radius: 20px; margin-bottom: 8px; }
+  .scenario-title { font-size: 1.25em; color: #f0f6fc; margin-bottom: 4px; }
+  .scenario-desc { color: #8b949e; font-size: 0.88em; }
+  .scenario-summary { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 14px 18px; margin: 0 0 18px 0; }
+  .scenario-summary p { margin: 4px 0; font-size: 0.9em; }
+  .scenario-summary .pain-point { color: #f0883e; }
+  .scenario-summary .solution { color: #7ee787; }
+  .scenario-summary strong { color: #d2a8ff; }
+  .scenario-body { padding: 28px; }
+  .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 20px 0; }
+  .flow-node { background: #1f6feb22; border: 1px solid #1f6feb; color: #79c0ff; padding: 8px 14px; border-radius: 8px; font-size: 0.85em; text-align: center; min-width: 90px; }
+  .flow-arrow { color: #484f58; font-size: 1.2em; }
+  .step { background: #0d1117; border: 1px solid #21262d; border-radius: 8px; padding: 16px 20px; margin-bottom: 14px; }
+  .step-num { display: inline-block; background: #30363d; color: #8b949e; font-size: 0.75em; width: 24px; height: 24px; text-align: center; line-height: 24px; border-radius: 50%; margin-right: 10px; }
+  .step-title { color: #f0f6fc; font-weight: 600; font-size: 0.95em; }
+  .step-detail { color: #8b949e; font-size: 0.85em; margin: 6px 0 8px 34px; }
+  .step-code { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 12px 16px; font-family: "Cascadia Code", "Consolas", monospace; font-size: 0.82em; color: #a5d6ff; white-space-pre-wrap; margin: 8px 0 0 34px; overflow-x: auto; }
+  .step-result { background: #1c2128; border: 1px solid #30363d; border-radius: 6px; padding: 10px 16px; font-size: 0.85em; color: #7ee787; margin: 8px 0 0 34px; }
+  .branch { border-left: 3px solid #d29922; padding-left: 14px; margin: 10px 0 10px 34px; }
+  .branch-label { color: #d29922; font-size: 0.82em; font-weight: 600; }
+  .tip { background: #1c2128; border: 1px solid #388bfd; border-radius: 8px; padding: 14px 18px; margin: 16px 0; font-size: 0.88em; color: #8b949e; }
+  .tip strong { color: #79c0ff; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 16px; font-size: 0.88em; }
+  th { background: #1c2128; color: #79c0ff; padding: 10px 14px; text-align: left; border: 1px solid #30363d; }
+  td { padding: 9px 14px; border: 1px solid #21262d; color: #c9d1d9; }
+  tr:nth-child(even) td { background: #161b22; }
+  .tag { display: inline-block; background: #388bfd22; border: 1px solid #388bfd; color: #79c0ff; font-size: 0.72em; padding: 1px 7px; border-radius: 4px; margin-right: 4px; }
+  .tag-green { background: #3fb95022; border-color: #3fb950; color: #7ee787; }
+  .tag-red { background: #f8514922; border-color: #f85149; color: #ffa198; }
+  .tag-yellow { background: #d2992222; border-color: #d29922; color: #d29922; }
+  .highlight { color: #f0883e; }
+  .caps { display: inline-block; background: #21262d; color: #8b949e; font-size: 0.72em; padding: 2px 8px; border-radius: 4px; margin-right: 6px; font-family: monospace; }
+  hr { border: none; border-top: 1px solid #21262d; margin: 28px 0; }
+  .output-box { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 16px 20px; margin: 14px 0; font-family: "Cascadia Code", "Consolas", monospace; font-size: 0.82em; color: #c9d1d9; white-space-pre-wrap; }
+  .output-box .comment { color: #8b949e; }
+  .output-box .key { color: #79c0ff; }
+  .output-box .str { color: #a5d6ff; }
+  .output-box .num { color: #d29922; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>PRISM-OS 用户场景全流程</h1>
+<p class="subtitle">共 5 个场景，覆盖完整能力和边界 &nbsp;|&nbsp; 版本 1.4 &nbsp;|&nbsp; 2026-05-21</p>
+
+<!-- 导航 -->
+<div class="nav">
+  <a href="#s1">场景一：完整流程</a>
+  <a href="#s2">场景二：命题澄清</a>
+  <a href="#s3">场景三：RSS-Hunter</a>
+  <a href="#s4">场景四：数字分身反馈</a>
+  <a href="#s5">场景五：内容生成</a>
+</div>
+
+<!-- ========== 场景一 ========== -->
+<div class="scenario" id="s1">
+<div class="scenario-header">
+  <div class="scenario-num">场景一</div>
+  <div class="scenario-title">用户输入清晰命题 → PRISM-OS 完整流程 → 生成标题 + 大纲</div>
+  <div class="scenario-desc">用户给出一个明确的选题方向，系统经过 8 个 Phase 处理，输出标题候选 + 现实校验 + 双端大纲</div>
+</div>
+<div class="scenario-body">
+
+<div class="scenario-summary">
+  <p><strong>模块：</strong>PRISM-OS 主流程（Phase 0-8）</p>
+  <p><strong>用户痛点：</strong><span class="pain-point">有一个想写的选题方向，但不知道从何下手——标题怎么起、大纲怎么搭、素材够不够</span></p>
+  <p><strong>场景方案：</strong><span class="solution">输入命题后，系统自动完成标题生成、现实查重、双端大纲、逻辑审计全流程，直接输出可用结果</span></p>
+</div>
+
+<h3>完整流程图</h3>
+<div class="flow">
+  <div class="flow-node">用户输入命题</div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">Phase 0<br><small>意图识别</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">Phase 1<br><small>苏格拉底网关</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">Phase 1.5<br><small>备选检查</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">Phase 2<br><small>棱镜引擎</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">Phase 3<br><small>现实校验锚</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">Phase 3.5<br><small>数字分身筛选</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">Phase 4.5<br><small>CCOS大纲</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">Phase 4.6<br><small>Gap分析</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">输出结果</div>
+</div>
+
+<h3>Step 1 — 用户输入</h3>
+<div class="step">
+  <span class="step-num">1</span>
+  <span class="step-title">用户在终端输入一个明确的主题</span>
+  <div class="step-detail">命题包含具体对象、冲突元素和事实支撑，熵值 ≥ 2.5，直接放行</div>
+</div>
+
+<h3>Step 2 — Phase 0: 意图识别</h3>
+<div class="step">
+  <span class="step-num">2</span>
+  <span class="step-title">classify_intent() — 判断是否触发 PRISM-OS</span>
+  <div class="step-detail">检测用户输入是否包含写作/选题关键词，或疑问句式。包含"写文章"、"选题"、"如何写"等触发词时启动。</div>
+  <div class="step-code">trigger: true  ← "选题"关键词存在
+confidence: 0.65
+reason: "包含选题关键词"</div>
+  <div class="step-result">✓ 触发 PRISM-OS，进入 Phase 1</div>
+</div>
+
+<h3>Step 3 — Phase 1: 苏格拉底网关</h3>
+<div class="step">
+  <span class="step-num">3</span>
+  <span class="step-title">socratic_gateway() — 熵值计算 + 决策（Phase 4.7 优化）</span>
+  <div class="step-detail">
+    <b>Phase 4.7 变更：</b>熵值计算改为纯公式实现，0 次 LLM 调用。<br>
+    <br>
+    三个维度打分（规则版）：<br>
+    Object_Clarity（对象清晰度）：正则匹配具体对象/模糊对象/无对象<br>
+    Conflict_Tension（冲突张力）：关键词检测（越X越Y/反常识等）<br>
+    Fact_Support（事实支撑）：数据/案例/现象描述检测<br>
+    熵值公式：Entropy = Object×0.4 + Conflict×0.4 + Fact×0.2<br>
+    决策阈值：≥ 2.5 → pass、1.5-2.5 → clarify、&lt; 1.5 → blocked
+  </div>
+  <div class="step-code">input_type: "sentence"
+object_clarity: 0.8
+conflict_tension: 0.75
+fact_support: 0.7
+entropy_score: 2.65
+decision: "pass"
+<span class="comment"># LLM 调用：0 次（Phase 4.7 规则版）</span></div>
+  <div class="step-result">✓ 熵值 2.65 ≥ 2.5，直接放行，进入 Phase 2</div>
+</div>
+
+<h3>Step 4 — Phase 1.5: 备选检查</h3>
+<div class="step">
+  <span class="step-num">4</span>
+  <span class="step-title">check_related_backups() — 查询飞书备选队列</span>
+  <div class="step-detail">
+    1. 调用 check_expired_backups() 清理 30 天前过期备选<br>
+    2. 读取飞书表中 类型=备选、状态=备选 的所有记录<br>
+    3. 计算当前命题与备选的 Embedding 相似度（0.4×Jaccard + 0.6×Cosine）<br>
+    4. 返回相似度 > 0.7 的记录
+  </div>
+  <div class="step-code"># 备选队列查询结果
+matched_backups: []  # 无相似备选</div>
+  <div class="step-result">无相关备选，继续 Phase 2</div>
+</div>
+
+<h3>Step 5 — Phase 2: 棱镜引擎</h3>
+<div class="step">
+  <span class="step-num">5</span>
+  <span class="step-title">prism_engine() — 四维标题生成</span>
+  <div class="step-detail">
+    按四个维度各生成 3 个候选标题（共 12 个）：<br>
+    reversal（逆向拆解）、micro_scene（微观切片）、systemic_flaw（系统归因）、bridge（认知脚手架）<br>
+    每个维度有独立 prompt，包含禁用词检查和长度限制（18-28字）
+  </div>
+  <div class="step-code"># prism_engine() 返回
+status: "success"
+candidates: [
+  {title: "程序员失业潮：被AI取代的真相", dimension: "reversal", char_count: 18},
+  {title: "从某厂裁员看技术人的职场危机", dimension: "micro_scene", char_count: 16},
+  ...
+]
+orthogonal_count: 10</div>
+</div>
+
+<h3>Step 6 — Phase 2.5: 正交性检查</h3>
+<div class="step">
+  <span class="step-num">6</span>
+  <span class="step-title">check_orthogonality() — Embedding 相似度过滤</span>
+  <div class="step-detail">
+    预计算所有标题向量，计算 Cosine 相似度。相似度 &gt; 0.75 的标题标记为非正交。<br>
+    Embedding API 不可用时降级到纯 Jaccard。
+  </div>
+  <div class="step-code">candidates[0].orthogonal: true   # max_similarity=0.52
+candidates[1].orthogonal: false  # max_similarity=0.81 ← 被标记</div>
+</div>
+
+<h3>Step 7 — Phase 3: 现实校验锚</h3>
+<div class="step">
+  <span class="step-num">7</span>
+  <span class="step-title">reality_anchor() — 搜索查重 + 竞争度评估</span>
+  <div class="step-detail">
+    1. 调用 Tavily API（优先）或 Firecrawl API（备用）搜索标题<br>
+    2. 计算与搜索结果的 Jaccard 相似度作为查重率<br>
+    3. 查重率 &lt; 0.3 → 蓝海，0.3-0.7 → 黄海，&gt; 0.7 → 红海<br>
+    4. 查重率 &gt; 0.8 → 拒绝该标题
+  </div>
+  <div class="step-code"># reality_anchor() 返回
+validated: [
+  {title: "...", duplicate_rate: 0.22, competition_level: "蓝海", novelty_score: 0.78},
+  ...
+]
+statistics: {
+  blue_ocean: 4, yellow_ocean: 5, red_ocean: 1,
+  avg_novelty: 0.71
+}</div>
+</div>
+
+<h3>Step 8 — Phase 3.5: 数字分身筛选</h3>
+<div class="step">
+  <span class="step-num">8</span>
+  <span class="step-title">digital_twin_filter() — 模拟创作者思维筛选</span>
+  <div class="step-detail">
+    1. 调用 learn_thinking_pattern() 从 topic_log.yaml 学习思维特征<br>
+    2. 根据学习到的维度权重、风格关键词进行个性化筛选<br>
+    3. 优先选择符合创作者偏好的选题，过滤模式化选题
+  </div>
+  <div class="step-code"># learn_thinking_pattern() 返回
+thinking_pattern: "理性、克制、反常识"
+dimension_weights: {reversal: 0.35, micro_scene: 0.25, ...}
+confidence: 0.8
+
+# digital_twin_filter() 返回
+selected_topics: [
+  {topic: "程序员失业潮：被AI取代的真相", selection_reason: "符合逆向拆解偏好"},
+  ...
+]</div>
+</div>
+
+<h3>Step 9 — Phase 4.5: CCOS v2.0 认知推进流大纲</h3>
+<div class="step">
+  <span class="step-num">9</span>
+  <span class="step-title">cognitive_outline_workflow() — 14项动态认知大纲（Phase 4.7 优化）</span>
+  <div class="step-detail">
+    <b>Phase 4.7 优化：</b><br>
+    1. Layer 2 三个 LLM 调用改为并行化（extract_core_problem / extract_cognitive_tension / infer_potential_directions）<br>
+    2. 双平台共享 Layer 2 结果（18次→12次 LLM）<br>
+    3. recognize_content_goal / recognize_user_motivation 改为规则版（关键词表扩充）<br>
+    4. classify_topic_type / decide_progression_method 回退到 LLM（规则版覆盖率评估不足）<br>
+    5. _call_llm_raw 修复 scene bug（设置 GATEWAY_SCENE=writing-cn）<br>
+    <br>
+    CCOS（Content Cognition Outline System）v2.0 替代旧版目录式大纲，8层认知处理：<br>
+    Layer 0（认知对齐）：七类追问，用户可选跳过<br>
+    Layer 1（内容意图）：内容目标识别、用户动机识别（规则版）<br>
+    Layer 2（选题解析）：选题类型（LLM）、核心问题链、认知张力、潜在方向（并行 LLM）<br>
+    Layer 3（结构决策）：主结构推荐、推进方式选择（LLM）<br>
+    Layer 4-8（模块+势能）：认知模块流编排、作者性注入、势能曲线<br>
+    输出14项结构化大纲，含信息密度规则 + Anti-AI规则
+  </div>
+  <div class="step-code">ccos_outline: {
+  内容目标: "认知升级",
+  用户动机: "好奇",
+  核心认知冲突: "AI让内容更容易也更容易被淹没",
+  主结构: "认知升级型",
+  推进方式: "冲突推进",
+  认知模块流: [
+    {模块: "HOOK", 内容摘要: "开场钩子", 功能: "制造停留"},
+    {模块: "CASE", 内容摘要: "一个创业者的真实故事", 功能: "建立代入感"},
+    {模块: "EXPLAIN", 内容摘要: "为什么会出现这种情况", 功能: "建立理解"},
+    {模块: "MODEL", 内容摘要: "认知升级模型", 功能: "提升认知密度"}
+  ],
+  势能曲线: {张力变化: [...], 情绪曲线: [...], 认知落差设计: "先A后B"},
+  信息密度要求: "每段必须有信息增量；禁止同义反复/空洞总结...",
+  Anti-AI要求: "禁止：模板感/套话/平均化表达/AI式升华...",
+  最终动态认知大纲: "【认知升级型】通过【冲突推进】..."
+}</div>
+</div>
+
+<h3>Step 10 — Phase 4.6: Gap Analysis 素材就绪度</h3>
+<div class="step">
+  <span class="step-num">10</span>
+  <span class="step-title">analyze_gap() — 评估素材是否足以支撑内容创作</span>
+  <div class="step-detail">
+    1. 调用 Obsidian 知识网关 full_text_search() 搜索相关素材<br>
+    2. 计算素材就绪度（evidence chain 匹配率）<br>
+    3. 阈值规则：&lt; 0.3 → 红色中断，0.3-0.6 → 黄色警告，≥ 0.6 → 绿色通过<br>
+    4. 新增 thesis_summary 字段：LLM 总结的选题核心论点
+  </div>
+  <div class="step-code">gap: {
+  thesis_summary: "AI让内容创作更容易，但红利不属于所有人",
+  readiness: 0.45,
+  missing_evidence: ["具体数据支撑", "成功案例细节"],
+  recommendation: "建议补充具体数据和一个深度案例"
+}</div>
+</div>
+
+<h3>Step 11 — Phase 5-7</h3>
+<div class="step">
+  <span class="step-num">11</span>
+  <span class="step-title">logic_pressure() + assassin_mechanism()</span>
+  <div class="step-detail">
+    <b>Phase 5 逻辑压力测试：</b>检测标题中的逻辑谬误（循环论证/幸存者偏差/因果倒置/滑坡谬误），计算与历史选题的语义距离<br>
+    <b>Phase 6 数据持久化：</b>将命题和候选标题写入 topic_log.yaml<br>
+    <b>Phase 7 刺客机制：</b>读取历史爆款，生成逻辑反转命题（当历史数据 ≥ 20 条时触发）
+  </div>
+  <div class="step-code">logic_audit: [
+  {title: "...", has_fallacy: false, fallacy_type: "无"}
+]
+cognitive_journey: {
+  avg_distance: 0.42,
+  cognitive_progress: "正常"
+}
+reversals: [
+  {original_thesis: "...", reversal_thesis: "...", strategy: "数据更新"}
+]</div>
+</div>
+
+<h3>最终输出</h3>
+
+<!-- 候选标题 -->
+<div style="background:#0d1117;border:1px solid #30363d;border-radius:12px;padding:20px 24px;margin-bottom:18px;">
+  <div style="font-size:0.78rem;color:#8b949e;margin-bottom:14px;letter-spacing:0.05em;">■ 候选标题（按综合评分排序）</div>
+  <div style="display:flex;flex-direction:column;gap:10px;">
+    <div style="display:flex;align-items:center;gap:14px;background:#161b22;border:1px solid #1f6feb;border-radius:10px;padding:12px 16px;">
+      <div style="width:32px;height:32px;border-radius:8px;background:#1f6feb22;border:1px solid #1f6feb;display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;color:#79c0ff;flex-shrink:0;">1</div>
+      <div style="flex:1;">
+        <div style="font-size:0.92rem;color:#f0f6fc;font-weight:600;margin-bottom:3px;">为什么"努力就能成功"是当今社会最大陷阱？</div>
+        <div style="font-size:0.75rem;color:#8b949e;"><span style="background:#388bfd22;border:1px solid #388bfd;color:#79c0ff;font-size:0.7rem;padding:1px 6px;border-radius:4px;margin-right:6px;">逆向拆解</span> 蓝海 · 新颖度 <span style="color:#7ee787;font-weight:700;">82%</span></div>
+      </div>
+      <div style="width:40px;height:40px;border-radius:50%;border:2px solid #3fb950;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span style="font-size:0.75rem;font-weight:700;color:#3fb950;">82</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;background:#161b22;border:1px solid #21262d;border-radius:10px;padding:12px 16px;">
+      <div style="width:32px;height:32px;border-radius:8px;background:#21262d;border:1px solid #30363d;display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;color:#8b949e;flex-shrink:0;">2</div>
+      <div style="flex:1;">
+        <div style="font-size:0.92rem;color:#f0f6fc;font-weight:600;margin-bottom:3px;">某大厂裁员现场：一个程序员的中年危机</div>
+        <div style="font-size:0.75rem;color:#8b949e;"><span style="background:#21262d22;border:1px solid #30363d;color:#8b949e;font-size:0.7rem;padding:1px 6px;border-radius:4px;margin-right:6px;">微观切片</span> 蓝海 · 新颖度 <span style="color:#7ee787;font-weight:700;">79%</span></div>
+      </div>
+      <div style="width:40px;height:40px;border-radius:50%;border:2px solid #30363d;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span style="font-size:0.75rem;font-weight:700;color:#8b949e;">79</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;background:#161b22;border:1px solid #21262d;border-radius:10px;padding:12px 16px;">
+      <div style="width:32px;height:32px;border-radius:8px;background:#21262d;border:1px solid #30363d;display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;color:#8b949e;flex-shrink:0;">3</div>
+      <div style="flex:1;">
+        <div style="font-size:0.92rem;color:#f0f6fc;font-weight:600;margin-bottom:3px;">程序员失业潮的根源：不是AI，是商业模式缺陷</div>
+        <div style="font-size:0.75rem;color:#8b949e;"><span style="background:#21262d22;border:1px solid #30363d;color:#8b949e;font-size:0.7rem;padding:1px 6px;border-radius:4px;margin-right:6px;">系统归因</span> 黄海 · 新颖度 <span style="color:#d29922;font-weight:700;">68%</span></div>
+      </div>
+      <div style="width:40px;height:40px;border-radius:50%;border:2px solid #30363d;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span style="font-size:0.75rem;font-weight:700;color:#8b949e;">68</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 双平台认知大纲 -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+  <!-- 公众号 -->
+  <div style="background:#0d1117;border:1px solid #388bfd;border-radius:12px;overflow:hidden;">
+    <div style="padding:12px 16px;border-bottom:1px solid #21262d;display:flex;align-items:center;gap:8px;">
+      <span style="width:7px;height:7px;border-radius:50%;background:#58a6ff;flex-shrink:0;"></span>
+      <span style="font-weight:700;font-size:0.88rem;color:#f0f6fc;">公众号</span>
+      <span style="font-size:0.72rem;color:#8b949e;margin-left:auto;">认知升级型</span>
+    </div>
+    <div style="padding:14px 16px;display:flex;flex-direction:column;gap:7px;">
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <span style="font-size:0.7rem;color:#8b949e;min-width:56px;padding-top:1px;">内容目标</span>
+        <span style="font-size:0.82rem;color:#f0f6fc;font-weight:500;">认知升级</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <span style="font-size:0.7rem;color:#8b949e;min-width:56px;padding-top:1px;">推进方式</span>
+        <span style="font-size:0.82rem;color:#f85149;font-weight:600;">冲突推进</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <span style="font-size:0.7rem;color:#8b949e;min-width:56px;padding-top:1px;">模块流</span>
+        <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+          <span style="background:#1f6feb22;border:1px solid #1f6feb;color:#79c0ff;font-size:0.68rem;padding:1px 6px;border-radius:5px;font-weight:600;">HOOK</span>
+          <span style="color:#484f58;font-size:0.7rem;">→</span>
+          <span style="background:#1f6feb22;border:1px solid #1f6feb;color:#79c0ff;font-size:0.68rem;padding:1px 6px;border-radius:5px;font-weight:600;">CASE</span>
+          <span style="color:#484f58;font-size:0.7rem;">→</span>
+          <span style="background:#1f6feb22;border:1px solid #1f6feb;color:#79c0ff;font-size:0.68rem;padding:1px 6px;border-radius:5px;font-weight:600;">EXPLAIN</span>
+          <span style="color:#484f58;font-size:0.7rem;">→</span>
+          <span style="background:#1f6feb22;border:1px solid #1f6feb;color:#79c0ff;font-size:0.68rem;padding:1px 6px;border-radius:5px;font-weight:600;">MODEL</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <span style="font-size:0.7rem;color:#8b949e;min-width:56px;padding-top:1px;">Anti-AI</span>
+        <span style="font-size:0.78rem;color:#c9d1d9;line-height:1.5;">禁止模板感，强制人类思考感</span>
+      </div>
+    </div>
+  </div>
+  <!-- 小红书 -->
+  <div style="background:#0d1117;border:1px solid #f85149;border-radius:12px;overflow:hidden;">
+    <div style="padding:12px 16px;border-bottom:1px solid #21262d;display:flex;align-items:center;gap:8px;">
+      <span style="width:7px;height:7px;border-radius:50%;background:#f85149;flex-shrink:0;"></span>
+      <span style="font-weight:700;font-size:0.88rem;color:#f0f6fc;">小红书</span>
+      <span style="font-size:0.72rem;color:#8b949e;margin-left:auto;">故事驱动型</span>
+    </div>
+    <div style="padding:14px 16px;display:flex;flex-direction:column;gap:7px;">
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <span style="font-size:0.7rem;color:#8b949e;min-width:56px;padding-top:1px;">内容目标</span>
+        <span style="font-size:0.82rem;color:#f0f6fc;font-weight:500;">情绪共鸣</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <span style="font-size:0.7rem;color:#8b949e;min-width:56px;padding-top:1px;">推进方式</span>
+        <span style="font-size:0.82rem;color:#f85149;font-weight:600;">情绪推进</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <span style="font-size:0.7rem;color:#8b949e;min-width:56px;padding-top:1px;">模块流</span>
+        <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+          <span style="background:#f8514922;border:1px solid #f85149;color:#ffa198;font-size:0.68rem;padding:1px 6px;border-radius:5px;font-weight:600;">HOOK</span>
+          <span style="color:#484f58;font-size:0.7rem;">→</span>
+          <span style="background:#f8514922;border:1px solid #f85149;color:#ffa198;font-size:0.68rem;padding:1px 6px;border-radius:5px;font-weight:600;">CASE</span>
+          <span style="color:#484f58;font-size:0.7rem;">→</span>
+          <span style="background:#f8514922;border:1px solid #f85149;color:#ffa198;font-size:0.68rem;padding:1px 6px;border-radius:5px;font-weight:600;">ACTION</span>
+          <span style="color:#484f58;font-size:0.7rem;">→</span>
+          <span style="background:#f8514922;border:1px solid #f85149;color:#ffa198;font-size:0.68rem;padding:1px 6px;border-radius:5px;font-weight:600;">BOUNDARY</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <span style="font-size:0.7rem;color:#8b949e;min-width:56px;padding-top:1px;">Anti-AI</span>
+        <span style="font-size:0.78rem;color:#c9d1d9;line-height:1.5;">禁止平均化表达，强制可操作</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 素材缺口 + 逻辑审计 -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+  <!-- 素材缺口 -->
+  <div style="background:#0d1117;border:1px solid #f85149;border-radius:12px;padding:16px 18px;">
+    <div style="font-size:0.78rem;color:#8b949e;margin-bottom:12px;">■ 素材缺口（Phase 4.6）</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <div style="font-size:1.5rem;font-weight:800;color:#f85149;">45%</div>
+      <div style="flex:1;">
+        <div style="font-size:0.72rem;color:#8b949e;margin-bottom:4px;">就绪度</div>
+        <div style="height:4px;background:#21262d;border-radius:2px;overflow:hidden;">
+          <div style="height:100%;width:45%;background:#f85149;border-radius:2px;"></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;">
+      <span style="background:#f8514922;border:1px solid #f85149;color:#ffa198;font-size:0.7rem;padding:2px 8px;border-radius:100px;">具体数据支撑</span>
+      <span style="background:#f8514922;border:1px solid #f85149;color:#ffa198;font-size:0.7rem;padding:2px 8px;border-radius:100px;">成功案例细节</span>
+    </div>
+    <div style="font-size:0.8rem;color:#8b949e;">建议补充具体数据和一个深度案例</div>
+  </div>
+  <!-- 逻辑审计 -->
+  <div style="background:#0d1117;border:1px solid #3fb950;border-radius:12px;padding:16px 18px;">
+    <div style="font-size:0.78rem;color:#8b949e;margin-bottom:12px;">■ 逻辑审计</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+      <div style="width:28px;height:28px;border-radius:50%;background:#3fb95022;border:1px solid #3fb950;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span style="color:#3fb950;font-size:0.75rem;">✓</span>
+      </div>
+      <span style="font-size:0.88rem;color:#7ee787;font-weight:600;">所有标题逻辑通过</span>
+    </div>
+    <div style="font-size:0.8rem;color:#8b949e;">选题已保存到历史记录</div>
+  </div>
+</div>
+
+<table>
+  <tr><th>模块</th><th>输入</th><th>输出</th><th>LLM 调用</th><th>Phase 4.7 变更</th></tr>
+  <tr><td>Phase 0 意图识别</td><td>用户输入文本</td><td>trigger / skip</td><td>0次</td><td>无变更</td></tr>
+  <tr><td>Phase 1 苏格拉底网关</td><td>命题</td><td>熵值 + 决策</td><td>0次</td><td><span class="tag-green">优化</span> 规则版</td></tr>
+  <tr><td>Phase 2 棱镜引擎</td><td>命题</td><td>12个候选标题</td><td>12次</td><td>无变更</td></tr>
+  <tr><td>Phase 3 现实校验锚</td><td>候选标题列表</td><td>查重率 + 竞争度</td><td>0次</td><td>无变更</td></tr>
+  <tr><td>Phase 3.5 数字分身</td><td>候选标题 + 思维特征</td><td>筛选后列表</td><td>1次</td><td>无变更</td></tr>
+  <tr><td>Phase 4.5 CCOS大纲（单平台）</td><td>命题 + 标题</td><td>14项动态认知大纲</td><td>6次</td><td><span class="tag-green">优化</span> 9次→6次</td></tr>
+  <tr><td>Phase 4.5 CCOS大纲（双平台）</td><td>命题 + 标题</td><td>双平台14项大纲</td><td>12次</td><td><span class="tag-green">优化</span> 18次→12次</td></tr>
+  <tr><td>Phase 4.6 Gap分析</td><td>命题 + 素材</td><td>素材就绪度 + thesis_summary</td><td>1次</td><td>无变更</td></tr>
+  <tr><td>Phase 5-7</td><td>候选 + 历史数据</td><td>逻辑审计 + 反转命题</td><td>N次</td><td>无变更</td></tr>
+</table>
+
+<div class="tip">
+  <strong>Phase 4.7 LLM 优化总结：</strong>单平台 9次→6次，双平台 18次→12次，熵值计算 1次→0次。完整流程约节省 30-40% LLM 消耗。
+</div>
+
+</div>
+</div>
+
+<!-- ========== 场景二 ========== -->
+<div class="scenario" id="s2">
+<div class="scenario-header">
+  <div class="scenario-num">场景二</div>
+  <div class="scenario-title">用户命题模糊 → 苏格拉底网关拦截 → 追问 + 备选队列</div>
+  <div class="scenario-desc">用户输入模糊（如"AI焦虑"、"想写点什么"），熵值不足，需要追问澄清，同时将生成的方向选项存入飞书备选队列</div>
+</div>
+<div class="scenario-summary">
+  <p><strong>模块：</strong>苏格拉底网关 + 备选队列（Phase 1 / Phase 1.5）</p>
+  <p><strong>用户痛点：</strong><span class="pain-point">脑子里有个大概方向，但说不清楚具体想写什么——命题太模糊，系统无法生成有效标题</span></p>
+  <p><strong>场景方案：</strong><span class="solution">系统先评估命题质量（熵值），不足时追问澄清；同时生成 2-3 个具体方向存入飞书备选队列，供后续匹配</span></p>
+</div>
+<div class="scenario-body">
+
+<h3>流程图</h3>
+<div class="flow">
+  <div class="flow-node">用户输入<br><small>"AI让我焦虑"</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">Phase 1<br><small>熵值计算</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">decision=clarify</div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">追问问题返回</div>
+  <span class="flow-arrow">+</span>
+  <div class="flow-node">方向存备选队列</div>
+</div>
+
+<h3>Step 1 — 输入分类</h3>
+<div class="step">
+  <span class="step-num">1</span>
+  <span class="step-title">classify_input() — 判断输入类型</span>
+  <div class="step-detail">
+    检测规则：中文 &lt; 10 字符 → keyword；包含问号/疑问词 → question；否则 → sentence<br>
+    "AI让我焦虑" 共 6 个字符，无问号 → <span class="highlight">input_type: "keyword"</span>
+  </div>
+  <div class="step-code">input_type: "keyword"</div>
+</div>
+
+<h3>Step 2 — 熵值计算</h3>
+<div class="step">
+  <span class="step-num">2</span>
+  <span class="step-title">calculate_entropy() — 三维度打分</span>
+  <div class="step-detail">
+    <b>object_clarity</b>：无具体对象，"AI让我焦虑"是情绪表达 → 0.0<br>
+    <b>conflict_tension</b>：无矛盾冲突，纯情绪 → 0.0<br>
+    <b>fact_support</b>：无具体事实，纯感受 → 0.0<br>
+    <b>Entropy</b> = 0.0×0.4 + 0.0×0.4 + 0.0×0.2 = <span class="highlight">0.0</span>
+  </div>
+  <div class="step-code">object_clarity: 0.0
+conflict_tension: 0.0
+fact_support: 0.0
+entropy_score: 0.0
+decision: "clarify"   # 1.5 ≤ 0.0 < 2.5 → clarify</div>
+  <div class="step-result">⚠ 熵值 0.0，需要追问澄清</div>
+</div>
+
+<h3>Step 3 — 生成追问问题</h3>
+<div class="step">
+  <span class="step-num">3</span>
+  <span class="step-title">generate_clarification_questions()</span>
+  <div class="step-detail">
+    keyword 类型追问原则：追问核心观点、受众关联、期望行动<br>
+    返回 2-3 个追问，帮助用户将模糊意图明确化
+  </div>
+  <div class="step-code">questions: [
+  "你对AI的具体焦虑是什么？是职业威胁还是社会问题？",
+  "这篇文章的目标读者是哪类人群？",
+  "你希望读者看完后有什么改变？"
+]</div>
+</div>
+
+<h3>Step 4 — 生成选题方向 + 保存备选队列</h3>
+<div class="step">
+  <span class="step-num">4</span>
+  <span class="step-title">generate_directions() + save_backup()</span>
+  <div class="step-detail">
+    为 keyword 类型生成 2-3 个具体选题方向，<b>追加到返回结果</b>，不影响原有追问逻辑。<br>
+    每个方向调用 save_backup() 存入飞书备选队列（类型=备选，状态=备选），相同标题自动去重。
+  </div>
+  <div class="step-code">directions: [
+  "AI导致程序员失业：被忽视的真相",
+  "普通人如何应对AI时代的职业危机",
+  "AI焦虑的本质：技术变革中的身份认同危机"
+]
+
+# save_backup() 写入飞书
+类型: 备选
+状态: 备选
+来源: socratic-2026-05-18</div>
+  <div class="step-result">✓ 3 个方向已存入飞书备选队列</div>
+</div>
+
+<h3>Step 5 — Phase 1.5 备选检查</h3>
+<div class="step">
+  <span class="step-num">5</span>
+  <span class="step-title">check_related_backups() — 匹配已有备选</span>
+  <div class="step-detail">
+    清理过期备选后，读取所有备选队列记录，计算与当前命题的 Embedding 相似度。<br>
+    假设飞书已有 "AI时代年轻人职业选择" 的备选，相似度 0.73 > 0.7 阈值：
+  </div>
+  <div class="step-code">matched_backups: [
+  {
+    title: "AI时代年轻人职业选择",
+    similarity: 0.73,
+    record_id: "recxxxxxx"
+  }
+]</div>
+  <div class="step-result">找到相关备选，返回给用户选择</div>
+</div>
+
+<h3>最终返回</h3>
+<div class="output-box">{
+  <span class="key">"status"</span>: <span class="str">"need_clarification"</span>,
+  <span class="key">"input_type"</span>: <span class="str">"keyword"</span>,
+  <span class="key">"entropy_score"</span>: <span class="num">0.0</span>,
+  <span class="key">"decision"</span>: <span class="str">"clarify"</span>,
+  <span class="key">"questions"</span>: [
+    <span class="str">"你对AI的具体焦虑是什么？..."</span>,
+    <span class="str">"这篇文章的目标读者是哪类人群？..."</span>,
+    <span class="str">"你希望读者看完后有什么改变？"</span>
+  ],
+  <span class="key">"directions"</span>: [
+    <span class="str">"AI导致程序员失业：被忽视的真相"</span>,
+    <span class="str">"普通人如何应对AI时代的职业危机"</span>,
+    <span class="str">"AI焦虑的本质：技术变革中的身份认同危机"</span>
+  ],
+  <span class="key">"backup_matches"</span>: [
+    {<span class="key">"title"</span>: <span class="str">"AI时代年轻人职业选择"</span>, <span class="key">"similarity"</span>: <span class="num">0.73</span>}
+  ]
+}</div>
+
+<div class="tip">
+  <strong>边界说明：</strong>
+  <ul style="margin-top:8px">
+    <li>追问问题由 LLM 生成，可能不稳定（fallback 有 3 个固定问题）</li>
+    <li>备选队列最多返回 100 条（飞书 API 限制），超出不翻页</li>
+    <li>方向存入后由用户决定是否使用，系统不自动采用</li>
+    <li>若 entropy_score &lt; 1.5 → decision: "blocked"，直接拦截并返回重构建议</li>
+  </ul>
+</div>
+
+</div>
+</div>
+
+<!-- ========== 场景三 ========== -->
+<div class="scenario" id="s3">
+<div class="scenario-header">
+  <div class="scenario-num">场景三</div>
+  <div class="scenario-title">RSS-Hunter × PRISM-OS 深度整合 → 选题情报员</div>
+  <div class="scenario-desc">RSS-Hunter 升级为选题情报员：抓取 RSS → 提炼认知信号（trend/emotion/矛盾/同质化预警）→ 写入 crack_queue，PRISM-OS 通过 --from-queue / --match-queue 接入</div>
+</div>
+<div class="scenario-summary">
+  <p><strong>模块：</strong>RSS-Hunter（升级为选题情报员）</p>
+  <p><strong>用户痛点：</strong><span class="pain-point">RSS-Hunter 发现裂缝后只推送到终端，用户不会回来查看；裂缝写入 Obsidian 但结构不对，无法被 PRISM-OS 有效召回</span></p>
+  <p><strong>场景方案：</strong><span class="solution">裂缝进入 crack_queue（包含 signals + expression_angles）→ PRISM-OS 通过 --from-queue / --match-queue 接入 → 人工校准优先级</span></p>
+</div>
+<div class="scenario-body">
+
+<h3>流程图</h3>
+<div class="flow">
+  <div class="flow-node">RSS信源<br><small>15个</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">fetch_feed<br><small>HTTP抓取</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">parse_xml<br><small>XML解析</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">MD5去重<br><small>rss_dedup.json</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">信号提炼<br><small>LLM 5类信号</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">crack_queue</div>
+</div>
+
+<h3>Step 1 — 配置加载</h3>
+<div class="step">
+  <span class="step-num">1</span>
+  <span class="step-title">加载 feeds.yaml — 15 个信源配置</span>
+  <div class="step-detail">每个信源包含 name、url、category、tags、region、priority 字段。URL 大多使用 rsshub.app 代理。</div>
+  <div class="step-code">monitored_sources:
+  - name: "36氪"
+    url: "https://rsshub.app/36kr/feed"
+    category: "ai"
+    tags: ["AI", "科技"]
+    region: "cn"
+    priority: "high"</div>
+</div>
+
+<h3>Step 2 — RSS 抓取 + XML 解析</h3>
+<div class="step">
+  <span class="step-num">2</span>
+  <span class="step-title">_fetch_feed() + parse_xml() + extract_items()</span>
+  <div class="step-detail">
+    使用 rss_monitor._fetch_feed() 抓取 HTTP 内容（含 SSL bypass 和超时处理）。<br>
+    parse_xml() 解析 RSS/Atom 格式，extract_items() 提取 title、link、pub_date、summary。
+  </div>
+  <div class="step-code"># 提取结果示例
+{
+  title: "AI导致程序员失业率上升30%，我们该如何应对？",
+  link: "https://36kr.com/...",
+  pub_date: "2026-05-14",
+  summary: "最新调研报告显示..."
+}</div>
+</div>
+
+<h3>Step 3 — MD5 去重</h3>
+<div class="step">
+  <span class="step-num">3</span>
+  <span class="step-title">is_duplicate() — MD5 指纹去重</span>
+  <div class="step-detail">
+    计算 title + pub_date 的 MD5 哈希，查询 rss_dedup.json 是否已存在。<br>
+    已存在则跳过，未存在则写入 rss_dedup.json 并继续处理。
+  </div>
+  <div class="step-code"># 首次运行 → 新条目，写入去重记录
+is_duplicate("AI导致程序员失业率上升30%", "2026-05-14")
+→ false ✓ 新条目，流程继续
+
+# 第二次运行 → 重复，跳过
+is_duplicate("AI导致程序员失业率上升30%", "2026-05-14")
+→ true  ← 已处理过，跳过</div>
+</div>
+
+<h3>Step 4 — 信号提炼（升级）</h3>
+<div class="step">
+  <span class="step-num">4</span>
+  <span class="step-title">analyze_content() — 5 类认知信号提炼</span>
+  <div class="step-detail">
+    调用 LLM 从内容中提炼认知信号，不只是判断裂缝存在：
+    <b>trend</b>：趋势变化（50字内）<br>
+    <b>emotion</b>：读者情绪类型（焦虑/兴奋/替代感/身份危机/阶层焦虑）<br>
+    <b>contradiction</b>：最值得表达的矛盾（50字内）<br>
+    <b>homogenization_alert</b>：是否已同质化（是/否/不确定）<br>
+    <b>expression_angles</b>：不同类型创作者的切入角度 + 匹配度
+  </div>
+  <div class="step-code"># 信号提炼返回
+{
+  "has_crack": true,
+  "crack_type": "数据裂缝",
+  "consensus": "AI会创造更多就业机会",
+  "reality": "AI导致程序员失业率上升30%",
+  "confidence": 0.85,
+
+  "signals": {
+    "trend": "程序员职业安全感正在崩塌",
+    "emotion": ["替代焦虑", "身份危机"],
+    "contradiction": "AI 提高生产力，但降低普通内容价值",
+    "homogenization_alert": "否"
+  },
+
+  "expression_angles": [
+    {"type": "认知型创作者", "angle": "AI对普通程序员的影响：身份危机", "resonance": 0.9},
+    {"type": "商业型创作者", "angle": "AI 时代人力结构变化", "resonance": 0.7}
+  ],
+
+  "title_suggestions": ["为什么AI创造就业的数据是错的？"]
+}</div>
+</div>
+
+<h3>Step 5 — crack_queue 写入（改造）</h3>
+<div class="step">
+  <span class="step-num">5</span>
+  <span class="step-title">写入 crack_queue.json（替代 Obsidian）</span>
+  <div class="step-detail">
+    有裂缝 → 写入 crack_queue（包含 signals、expression_angles、creator_match）<br>
+    不再写入 Obsidian，Obsidian 历史条目保留但不再主动依赖
+  </div>
+  <div class="step-code"># crack_queue 条目结构
+data/crack_queue.json
+{
+  "id": "uuid-v4",
+  "title": "AI让程序员失业率上升30%",
+  "source": "36氪",
+  "crack_type": "数据裂缝",
+  "signals": { "trend": "...", "emotion": [...], ... },
+  "expression_angles": [...],
+  "creator_match": { "growth_stage": "系统型", "match_score": 0.75 },
+  "status": "new",
+  "priority_score": 0.85
+}</div>
+</div>
+
+<h3>Step 6 — 队列管理（替代终端推送）</h3>
+<div class="step">
+  <span class="step-num">6</span>
+  <span class="step-title">prism_os.py queue 子命令</span>
+  <div class="step-detail">
+    不再逐条推送，改为每日汇总。队列管理通过 CLI 完成：
+  </div>
+  <div class="step-code"># 查看队列
+python prism_os.py queue --list
+
+# 标记/打标
+python prism_os.py queue --tag <id> "战略级"
+
+# 调整优先级
+python prism_os.py queue --priority <id> --up
+
+# 标记已读/清除
+python prism_os.py queue --status <id> reviewed
+python prism_os.py queue --dismiss <id></div>
+</div>
+
+<h3>Step 7 — PRISM-OS 接入（新增）</h3>
+<div class="step">
+  <span class="step-num">7</span>
+  <span class="step-title">--from-queue / --match-queue 入口</span>
+  <div class="step-detail">
+    用户通过 PRISM-OS 消费队列中的裂缝：
+  </div>
+  <div class="step-code"># 从队列选择（多选合并进入主流程）
+python prism_os.py run --from-queue
+
+# 输入时匹配队列
+python prism_os.py run "AI程序员发展" --match-queue
+
+# 正常输入时被动提示
+python prism_os.py run "AI程序员发展"
+# → [队列中有 2 条相关裂缝，使用 --match-queue 查看详情]</div>
+</div>
+
+<h3>最终输出</h3>
+<div class="output-box">> python skills/rss-hunter/scripts/rss_hunter.py hunt
+
+[抓取] 36氪... ✓ 新条目: 3, 跳过: 12
+[抓取] 知乎热榜... ✓ 新条目: 5, 跳过: 8
+...
+[RSS-Hunter] 完成：新增 2 条认知裂缝，队列当前共 12 条
+  - [数据裂缝] AI让程序员失业率上升30%
+    信号：替代焦虑 / 教育崩塌前兆
+    表达入口：认知型→身份危机视角 商业型→人力结构视角
+  - [视角裂缝] 程序员不需要学算法了？
+    信号：技术教育正在被重新定义
+    表达入口：技术型→重新定义学习路径</div>
+
+<table>
+  <tr><th>组件</th><th>来源</th><th>说明</th></tr>
+  <tr><td>crack_queue.json</td><td>data/</td><td>裂缝队列（signals + expression_angles + creator_match）</td></tr>
+  <tr><td>crack_hunter_wrapper.py</td><td>.claude/</td><td>信号提炼（trend/emotion/矛盾/homogenization_alert）</td></tr>
+  <tr><td>rss_monitor.py</td><td>.claude/</td><td>HTTP 抓取（SSL bypass、超时）</td></tr>
+  <tr><td>call_llm.py</td><td>skills/prism-os/scripts/</td><td>LLM 调用（3层 fallback）</td></tr>
+  <tr><td>prism_os.py queue</td><td>skills/prism-os/scripts/</td><td>队列管理（--list/--tag/--dismiss）</td></tr>
+</table>
+
+<div class="tip">
+  <strong>实施计划（v1.0.9）：</strong>
+  <ul style="margin-top:8px">
+    <li><strong>Phase A</strong>：crack_queue v2.0 + RSS-Hunter 输出改造 ✅ 已完成</li>
+    <li><strong>Phase B</strong>：--from-queue 入口（队列浏览 + 多选合并）✅ 已完成</li>
+    <li><strong>Phase C</strong>：--match-queue + 被动提示 ✅ 已完成</li>
+    <li><strong>Phase D</strong>：数字分身扩展 + 归档功能（待开发）</li>
+  </ul>
+  详细方案：<code>docs/development/RSS-Hunter-PRISM-OS-Integration-Plan.md</code>
+</div>
+
+</div>
+</div>
+
+<!-- ========== 场景四 ========== -->
+<div class="scenario" id="s4">
+<div class="scenario-header">
+  <div class="scenario-num">场景四</div>
+  <div class="scenario-title">数字分身反馈循环 → 思维特征学习 → 匹配度跟踪</div>
+  <div class="scenario-desc">用户选择标题后记录反馈，数字分身学习思维特征，逐步校准推荐准确度</div>
+</div>
+<div class="scenario-summary">
+  <p><strong>模块：</strong>数字分身（Phase 3.5）</p>
+  <p><strong>用户痛点：</strong><span class="pain-point">系统推荐的标题总是"不对味"——不符合自己的写作风格和选题偏好，需要反复调整</span></p>
+  <p><strong>场景方案：</strong><span class="solution">系统从历史选题中学习用户的思维特征（偏好维度、风格词汇），在生成标题后自动筛选出最符合口味的那几个</span></p>
+</div>
+<div class="scenario-body">
+
+<h3>流程图</h3>
+<div class="flow">
+  <div class="flow-node">历史选题<br><small>topic_log.yaml</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">learn_thinking_pattern<br><small>LLM分析</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">思维特征模型<br><small>dimension_weights</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">digital_twin_filter<br><small>个性化筛选</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">用户选择<br><small>vs 分身推荐</small></div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">record_twin_feedback<br><small>反馈记录</small></div>
+</div>
+
+<h3>Step 1 — 思维特征学习</h3>
+<div class="step">
+  <span class="step-num">1</span>
+  <span class="step-title">learn_thinking_pattern() — 从历史学习</span>
+  <div class="step-detail">
+    读取 topic_log.yaml 最近 50 条选题历史，提取命题文本。<br>
+    将前 10 条作为样本发送给 LLM，分析维度偏好、风格关键词、思维特征。<br>
+    置信度 = min(1.0, 历史条数 / 20)，20 条以上满置信度。
+  </div>
+  <div class="step-code"># 输入：topic_log.yaml 历史记录
+[
+  {thesis: "为什么年轻人不愿意生孩子", dimension: "reversal"},
+  {thesis: "小县城年轻人的生存困境", dimension: "micro_scene"},
+  ...
+]
+
+# learn_thinking_pattern() 返回
+thinking_pattern: "理性、克制、反常识、深挖数据"
+dimension_weights: {
+  reversal: 0.35,
+  micro_scene: 0.30,
+  systemic_flaw: 0.20,
+  bridge: 0.15
+}
+style_keywords: ["为什么", "其实", "数据", "真相"]
+confidence: 0.75  # 基于 15 条历史</div>
+</div>
+
+<h3>Step 2 — 数字分身筛选</h3>
+<div class="step">
+  <span class="step-num">2</span>
+  <span class="step-title">digital_twin_filter() — 个性化筛选候选标题</span>
+  <div class="step-detail">
+    将学习到的思维特征注入 prompt，引导 LLM 模拟创作者偏好：<br>
+    1. 优先选择符合维度权重的标题（reversal 权重最高 0.35）<br>
+    2. 过滤使用 style_keywords 中陈词滥调的标题<br>
+    3. 保留具有"认知落差"的选题<br>
+    4. 过滤过于模式化的标题
+  </div>
+  <div class="step-code"># digital_twin_filter() 输入
+candidates: [12个候选标题]
+thinking_pattern: "理性、克制、反常识、深挖数据"
+dimension_weights: {reversal: 0.35, micro_scene: 0.30, ...}
+
+# 返回
+selected_topics: [
+  {
+    topic: "为什么"努力就能成功"是当今社会最大陷阱？",
+    selection_reason: "符合逆向拆解偏好+反常识特征",
+    confidence: 0.82
+  }
+]
+rejected_topics: [
+  {
+    topic: "AI时代必知的5个生存法则",
+    rejection_reason: "过于模式化，方法论标题不符合克制风格",
+    confidence: 0.65
+  }
+]</div>
+</div>
+
+<h3>Step 3 — 用户选择</h3>
+<div class="step">
+  <span class="step-num">3</span>
+  <span class="step-title">用户从 selected_topics 中选择或拒绝</span>
+  <div class="step-detail">
+    数字分身推荐 3 个标题，用户可能：<br>
+    1. 接受其中一个推荐 → match = true<br>
+    2. 拒绝所有推荐，自行选择其他标题 → match = false
+  </div>
+  <div class="step-code"># 场景 A：用户接受了推荐
+user_selected: "为什么"努力就能成功"是当今社会最大陷阱？"
+twin_selected: ["为什么"努力就能成功"...", "程序员失业潮真相", "..."]
+match: true
+
+# 场景 B：用户拒绝所有推荐
+user_selected: "AI时代必知的5个生存法则"  # 这是 rejected_topics 中的标题
+twin_selected: [...]
+match: false</div>
+</div>
+
+<h3>Step 4 — 反馈记录</h3>
+<div class="step">
+  <span class="step-num">4</span>
+  <span class="step-title">record_twin_feedback() — 记录到 twin_feedback.yaml</span>
+  <div class="step-detail">
+    保存反馈：命题 + 分身推荐列表 + 用户实际选择 + 是否匹配。<br>
+    每 50 次筛选后触发校准提示，建议用户调整思维特征配置。
+  </div>
+  <div class="step-code"># twin_feedback.yaml 记录
+- thesis: "为什么年轻人不愿意生孩子"
+  twin_selected: ["..."]
+  user_selected: "为什么"努力就能成功"是当今社会最大陷阱？"
+  match: false
+  date: "2026-05-14"</div>
+</div>
+
+<h3>Step 5 — 匹配度计算</h3>
+<div class="step">
+  <span class="step-num">5</span>
+  <span class="step-title">calculate_twin_accuracy() — 统计匹配率</span>
+  <div class="step-detail">
+    统计 twin_feedback.yaml 中所有反馈的 match 比率。<br>
+    阈值策略：先跑几轮数据看基线再定，暂不设硬阈值。
+  </div>
+  <div class="step-code"># calculate_twin_accuracy() 返回
+total_count: 28
+match_count: 17
+match_rate: 0.607
+average_confidence: 0.71
+last_calibration: "2026-05-10"
+suggestion: "建议关注 reversal 维度，当前匹配率 60.7%"</div>
+</div>
+
+<h3>Step 6 — 配置更新</h3>
+<div class="step">
+  <span class="step-num">6</span>
+  <span class="step-title">user_config.yaml — 可选自动校准</span>
+  <div class="step-detail">
+    配置项：<br>
+    <b>digital_twin.enabled</b>：是否启用（默认 true）<br>
+    <b>digital_twin.auto_learn</b>：是否自动学习（默认 true）<br>
+    <b>digital_twin.calibration_interval</b>：校准间隔（默认 50 次）<br>
+    <b>digital_twin.thinking_pattern</b>：默认思维特征（作为冷启动 fallback）
+  </div>
+  <div class="step-code">digital_twin:
+  enabled: true
+  thinking_pattern: "理性、克制、反常识"
+  auto_learn: true
+  calibration_interval: 50</div>
+</div>
+
+<div class="tip">
+  <strong>边界说明：</strong>
+  <ul style="margin-top:8px">
+    <li>思维特征学习依赖 topic_log.yaml 有历史数据，首次使用返回默认特征（"理性、克制、反常识"）</li>
+    <li>匹配度计算暂不设硬阈值，60% 匹配率仅供参考</li>
+    <li>auto_learn 每次 run_prism_os() 都会重新学习，有一定 LLM 调用成本</li>
+    <li>数字分身仅做"筛选"，不生成新标题，标题生成由 Phase 2 棱镜引擎负责</li>
+  </ul>
+</div>
+
+</div>
+</div>
+
+<!-- ========== 场景五 ========== -->
+<div class="scenario" id="s5">
+<div class="scenario-header">
+  <div class="scenario-num">场景五</div>
+  <div class="scenario-title">用户确认标题 → Phase 5 内容生成 → 逐模块确认 → 完整草稿</div>
+  <div class="scenario-desc">用户确认选题后，系统基于 CCOS 大纲进行分模块内容生成，支持公众号/小红书双平台，素材缺口可自动抓取入库</div>
+</div>
+<div class="scenario-summary">
+  <p><strong>模块：</strong>Phase 5 内容生成（Phase 5.1 + Phase 5.5 + Phase 5.6）</p>
+  <p><strong>用户痛点：</strong><span class="pain-point">有了大纲不知道怎么写——素材够不够、每个模块怎么衔接、人工改动的风格怎么积累</span></p>
+  <p><strong>场景方案：</strong><span class="solution">逐模块生成 + 用户确认/重写/编辑 → 素材缺口自动抓取入库 → 修改记录用于风格学习</span></p>
+</div>
+<div class="scenario-body">
+
+<h3>流程图</h3>
+<div class="flow">
+  <div class="flow-node">确认标题</div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">CCOS 大纲</div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">素材缺口检测</div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">逐模块生成</div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">用户确认</div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-node">完整草稿</div>
+</div>
+
+<h3>Step 1 — 素材缺口检测</h3>
+<div class="step">
+  <span class="step-num">1</span>
+  <span class="step-title">detect_material_gaps() — 按模块类型检测素材就绪度</span>
+  <div class="step-detail">
+    recall_materials_by_module() 按 HOOK/CASE/EXPLAIN/MODEL/ACTION/COUNTER/BOUNDARY 类型召回 Obsidian 素材，检测每个模块是否有足够素材支撑。
+  </div>
+  <div class="step-code"># 公众号平台模块缺口检测结果
+gaps: {
+  HOOK: { has_gap: true,  gap_description: "缺少反直觉案例/冲突性数据", recalled_count: 0 },
+  CASE: { has_gap: false, gap_description: "",                              recalled_count: 2 },
+  EXPLAIN: { has_gap: true, gap_description: "缺少分析框架/因果解释",       recalled_count: 1 },
+  MODEL: { has_gap: false, gap_description: "",                              recalled_count: 1 },
+  ...
+}</div>
+</div>
+
+<h3>Step 2 — 缺口搜索推荐</h3>
+<div class="step">
+  <span class="step-num">2</span>
+  <span class="step-title">search_gap_articles() — Tavily + DuckDuckGo 多源搜索</span>
+  <div class="step-detail">
+    当模块 has_gap=true 时，生成缺口搜索提示词，调用 Tavily API（优先）或 DuckDuckGo（备选）返回相关文章列表。
+  </div>
+  <div class="step-code"># 搜索"AI 内容创作 反直觉案例"缺口文章
+results: [
+  { title: "为什么 AI 降低了内容质量上限", url: "https://...", snippet: "...", source: "tavily" },
+  { title: "AI 写作的三个反常识事实", url: "https://...", snippet: "...", source: "tavily" }
+]</div>
+</div>
+
+<h3>Step 3 — 文章抓取入库</h3>
+<div class="step">
+  <span class="step-num">3</span>
+  <span class="step-title">scrape_and_import_material() — autocli 抓取 + Obsidian 入库</span>
+  <div class="step-detail">
+    用户选择文章 URL 后，scrape_article() 用 autocli 抓取内容（微信公众号用 weixin download，其他用 read），extract_key_content() 用 LLM 提取关键段落和摘要，最后写入 Obsidian 洞察库或原子库。scan_vault() 已改为 **/*.md 递归扫描，入库后自动被发现。
+  </div>
+  <div class="step-code"># autocli 抓取（公众号）
+scrape_result = scrape_article("https://mp.weixin.qq.com/s/...")
+→ { title: "为什么 AI 降低了内容质量上限", content: "..." }
+
+# LLM 提取关键内容
+extracted = extract_key_content(scrape_result, "HOOK")
+→ { summary: "AI 反而拉低了高端内容门槛...", key_paragraphs: [...], suggested_type: "insight" }
+
+# 写入 Obsidian
+→ 40_知识库/洞察库/为什么AI降低了内容质量上限.md</div>
+</div>
+
+<h3>Step 4 — 逐模块生成</h3>
+<div class="step">
+  <span class="step-num">4</span>
+  <span class="step-title">interactive_content_generation_workflow() — 逐模块确认/重写/编辑</span>
+  <div class="step-detail">
+    按 CCOS 模块流顺序生成，generate_single_module() 调用 LLM 输出草稿，同时注入 get_style_preferences() 学到的用户风格偏好。生成后用户可选择：回车确认 / r 重写（最多2次） / e 编辑 / q 退出。record_modification() 静默记录所有修改到 data/modification_log.json。
+  </div>
+  <div class="step-code"># HOOK 模块生成（含风格偏好）
+style_hints = build_style_hints(get_style_preferences("wechat"))
+→ "用户风格偏好：HOOK 长度约 25 字 | CASE 深度：深度叙事（500字+）"
+
+prompt = _build_hook_prompt(...) + "\n\n" + style_hints
+→ 生成草稿
+
+# 用户操作
+操作：[回车]确认 [r]重写 [e]编辑 → r  (重写)
+操作：[回车]确认 [r]重写 [e]编辑 → [回车]  (确认)
+# → 记录 modification_log</div>
+</div>
+
+<h3>Step 5 — 完整草稿输出</h3>
+<div class="step">
+  <span class="step-num">5</span>
+  <span class="step-title">所有模块确认后拼接完整草稿</span>
+  <div class="step-detail">
+    用户逐模块确认后，full_draft = "\n\n---\n\n".join([模块草稿])，返回完整初稿。同时记录 generation_stats 统计成功/跳过/失败模块数。
+  </div>
+  <div class="step-code"># 完整草稿结构
+full_draft = """
+【HOOK】
+为什么 AI 时代最大的不公平，是把"会提问"的人变成超人...
+---
+【CASE】
+张明是我见过最努力的程序员...
+---
+【EXPLAIN】
+这种情况的出现，根源在于...
+---
+【MODEL】
+我把这个认知升级模型称为"提问优先"框架...
+"""
+result = {
+  status: "completed",
+  topic: "AI让内容创作更容易",
+  platform: "wechat",
+  confirmed_modules: [...],
+  full_draft: full_draft,
+  generation_stats: { total: 7, success: 6, skipped: 1, failed: 0 }
+}</div>
+</div>
+
+<div class="tip">
+  <strong>Phase 5.6 新增能力（2026-05-25，commit 084ab0d+78be94a）：</strong>
+  <ul style="margin-top:8px">
+    <li>Issue 1 微信抓取三级降级：autocli weixin → wechat-article-extractor skill → markitdown-web</li>
+    <li>Issue 2 搜索→生成素材：gap_info["imported"] 已抓取内容追加到 materials 传入 generate_single_module</li>
+    <li>Issue 4 LLM 重试：Kimi/Gateway/OpenRouter 每 provider 指数退避重试（1s→2s，max_retries=2），401/403 不重试</li>
+    <li>Issue 5 interactive 润色：[p]润色后编辑 → polish_user_material → 预览 → 确认/编辑/放弃</li>
+    <li>Issue 6 archive 命令：--search / --trends / --list</li>
+    <li>Issue 7 抓取重试：_scrape_with_retry 超时 3 次退避（1s→2s→4s），403/451 不重试</li>
+  </ul>
+</div>
+
+</div>
+</div>
+
+<!-- ========== 能力边界总览 ========== -->
+<h2 id="capabilities">能力 &amp; 边界总览</h2>
+
+<table>
+  <tr><th>能力</th><th>说明</th><th>Phase 4.7 变更</th></tr>
+  <tr>
+    <td>四维标题生成</td>
+    <td>reversal/micro_scene/systemic_flaw/bridge 各 3 个候选，共 12 个</td>
+    <td>无变更</td>
+  </tr>
+  <tr>
+    <td>熵值质量门控</td>
+    <td>三维度打分，0-3.0 范围，决策阈值 1.5/2.5</td>
+    <td><span class="tag-green">优化</span> LLM 调用 1次→0次（纯公式规则版）</td>
+  </tr>
+  <tr>
+    <td>搜索查重</td>
+    <td>Tavily API（优先）+ Firecrawl API（备用）</td>
+    <td>无变更</td>
+  </tr>
+  <tr>
+    <td>Obsidian 知识网关</td>
+    <td>full_text_search + quality filter，threshold=7</td>
+    <td>无变更</td>
+  </tr>
+  <tr>
+    <td>飞书 Bitable 读写</td>
+    <td>爆款库读取/写入/备选队列/状态更新</td>
+    <td>无变更</td>
+  </tr>
+  <tr>
+    <td>RSS-Hunter 抓取</td>
+    <td>15 个信源，MD5 去重，5 种裂缝检测</td>
+    <td>无变更</td>
+  </tr>
+  <tr>
+    <td>数字分身</td>
+    <td>思维特征学习 + 个性化筛选 + 反馈循环</td>
+    <td>无变更</td>
+  </tr>
+  <tr>
+    <td>刺客机制</td>
+    <td>历史爆款逻辑反转 + 知识拓扑</td>
+    <td>无变更</td>
+  </tr>
+  <tr>
+    <td>CCOS 认知大纲</td>
+    <td>14项动态认知大纲，双平台差异化</td>
+    <td><span class="tag-green">优化</span> 双平台 18次→12次，Layer 2 并行化，scene bug 修复</td>
+  </tr>
+  <tr>
+    <td>LLM 多层 fallback</td>
+    <td>Gateway → Kimi → OpenRouter → Claude</td>
+    <td>无变更</td>
+  </tr>
+  <tr>
+    <td>Embedding 向量</td>
+    <td>ZhiPu embedding-2，1024 维，MD5 磁盘缓存</td>
+    <td>无变更</td>
+  </tr>
+  <tr>
+    <td>内容意图识别</td>
+    <td>内容目标 + 用户动机（规则版，关键词扩充）</td>
+    <td><span class="tag-green">新增</span> 从 LLM 改为规则版</td>
+  </tr>
+  <tr>
+    <td>微信抓取三级降级</td>
+    <td>autocli weixin → wechat-article-extractor skill → markitdown-web</td>
+    <td><span class="tag-green">Phase 5.6</span> 新增</td>
+  </tr>
+  <tr>
+    <td>搜索→生成素材</td>
+    <td>gap_info["imported"] 已抓取内容追加到 materials 传入 generate_single_module</td>
+    <td><span class="tag-green">Phase 5.6</span> 新增</td>
+  </tr>
+  <tr>
+    <td>LLM 指数退避重试</td>
+    <td>Kimi/Gateway/OpenRouter 每 provider 重试（1s→2s，max_retries=2），401/403 不重试</td>
+    <td><span class="tag-green">Phase 5.6</span> 新增</td>
+  </tr>
+  <tr>
+    <td>interactive 润色</td>
+    <td>[p]润色后编辑 → polish_user_material → 预览 → 确认/编辑/放弃</td>
+    <td><span class="tag-green">Phase 5.6</span> 新增</td>
+  </tr>
+  <tr>
+    <td>archive 命令</td>
+    <td>prism_os.py archive --search / --trends / --list</td>
+    <td><span class="tag-green">Phase 5.6</span> 新增</td>
+  </tr>
+  <tr>
+    <td>抓取重试机制</td>
+    <td>_scrape_with_retry 超时 3 次退避（1s→2s→4s），403/451 不重试</td>
+    <td><span class="tag-green">Phase 5.6</span> 新增</td>
+  </tr>
+</table>
+
+<div class="tip">
+  <strong>Phase 4.7 LLM 优化效果：</strong>
+  <ul style="margin-top:8px">
+    <li>熵值计算：1次 → 0次（100% 节省）</li>
+    <li>双平台 CCOS 大纲：18次 → 12次（-33%）</li>
+    <li>Layer 2 三个推理调用从串行改为并行（耗时 /3）</li>
+    <li>classify_topic_type / decide_progression_method 回退到 LLM（规则版覆盖率不足）</li>
+    <li>_call_llm_raw 修复 scene bug，GATEWAY_SCENE=writing-cn</li>
+  </ul>
+</div>
+
+<div class="tip">
+  <strong>Phase 5.6 测试验证（2026-05-25，commit 084ab0d+78be94a）：</strong>
+  <ul style="margin-top:8px">
+    <li>单元测试：test_content_generator.py 27/27 通过</li>
+    <li>E2E 测试：test_e2e.py 7/7 通过（sys.modules['call_llm'] mock 拦截）</li>
+    <li>全测试：151/151 通过</li>
+  </ul>
+</div>
+
+</div>
+</body>
+</html>

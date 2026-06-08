@@ -1,0 +1,47 @@
+# PRISM-OS 用户配置
+# 请将占位符替换为你的实际配置
+
+# 身份定位
+identity:
+  role: "揭秘者"
+  mission: "揭开社会共识与现实之间的裂缝"
+  tone: "理性、克制、反常识"
+
+# 目标受众
+audience:
+  age_range: "28-45"
+  occupation: "职场上升期/小企业主"
+  pain_points: "认知焦虑,财富增长瓶颈,AI工具选择困难"
+
+# 禁用词汇（标题中禁止出现）
+banned_words:
+  - "赋能"
+  - "降维打击"
+  - "破圈"
+  - "必须知道"
+  - "震惊"
+
+# 维度权重（可调整）
+dimension_weights:
+  reversal: 1.0
+  micro_scene: 1.0
+  systemic_flaw: 1.0
+  bridge: 1.0
+
+# API 配置
+# 请通过环境变量设置: export LLM_API_URL=... / export LLM_API_KEY=...
+llm_api:
+  url: "${LLM_API_URL}"
+  key: "${LLM_API_KEY}"
+  model: "gpt-4"
+  temperature: 0.7
+
+search_api:
+  url: "${SEARCH_API_URL}"
+  key: "${SEARCH_API_KEY}"
+
+# 验收标准
+acceptance_criteria:
+  gateway_intercept_rate: 0.85
+  orthogonality_rate: 0.75
+  north_star_achievement: 0.60

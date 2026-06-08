@@ -1,0 +1,8 @@
+*.pyc
+
+# API Keys & Secrets
+.env
+scripts/.env
+config/feishu_config.yaml
+!config/feishu_config.yaml.example
+!.env.example

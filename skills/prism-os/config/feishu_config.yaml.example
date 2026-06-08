@@ -1,0 +1,38 @@
+# PRISM-OS 飞书多维表格配置
+# 复制此文件为 feishu_config.yaml 并填入真实值
+
+base_token: "your-base-token-here"
+table_id: "your-table-id-here"
+table_name: "内容表现"
+
+views:
+  default: "your-default-view-id"
+  kanban: "your-kanban-view-id"
+  ranking: "your-ranking-view-id"
+
+fields:
+  article_id: "fldXXX"
+  title: "fldXXX"
+  platform: "fldXXX"
+  published_at: "fldXXX"
+  thesis: "fldXXX"
+  strategy: "fldXXX"
+  word_count: "fldXXX"
+  predicted_hkr: "fldXXX"
+  predicted_quality: "fldXXX"
+  ccos_modules: "fldXXX"
+  time_point: "fldXXX"
+  reads: "fldXXX"
+  shares: "fldXXX"
+  collects: "fldXXX"
+  likes: "fldXXX"
+  comments: "fldXXX"
+  engagement_rate: "fldXXX"
+  like_rate: "fldXXX"
+  collect_rate: "fldXXX"
+  share_rate: "fldXXX"
+  comment_rate: "fldXXX"
+
+sync:
+  schedule: "03:00"
+  last_synced_at: null

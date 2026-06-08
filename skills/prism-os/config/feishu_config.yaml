@@ -1,0 +1,42 @@
+# PRISM-OS 飞书多维表格配置
+# 创建时间：2026-06-03
+# Base URL：https://my.feishu.cn/base/QVz9byNH0auzRis9KeDcUoe3nZf?table=tbliXecencoSdnaB&view=vewhWxYEie
+
+base_token: "QVz9byNH0auzRis9KeDcUoe3nZf"
+table_id: "tbliXecencoSdnaB"
+table_name: "内容表现"
+
+# 视图 ID
+views:
+  default: "vewhWxYEie"       # 默认表格
+  kanban: "vewAlkDvhi"        # 看板（按平台）
+  ranking: "vewkiaBq7L"       # 表现排名
+
+# 字段 ID 映射
+fields:
+  article_id: "fldlmFBDSw"
+  title: "fldzi2mYNU"
+  platform: "fldpZ3JYhB"
+  published_at: "flduXZy1np"
+  thesis: "fld47CRHY0"
+  strategy: "fldiQ8jwS8"
+  word_count: "fldw9AwTSJ"
+  predicted_hkr: "fldoYSiX7n"
+  predicted_quality: "fldn2bUT3O"
+  ccos_modules: "fld5iYpdEn"
+  time_point: "fldyyD42kW"
+  reads: "fldA0fUCmB"
+  shares: "fldwetAxRN"
+  collects: "fldp0fprdJ"
+  likes: "fldcjmCnHf"
+  comments: "fldaZS2ep8"
+  engagement_rate: "fldAPSu5fH"
+  like_rate: "fldobc8LzL"
+  collect_rate: "fldGRmuDlT"
+  share_rate: "fldrfCLwJa"
+  comment_rate: "fldNLKB3EP"
+
+# 同步配置
+sync:
+  schedule: "03:00"
+  last_synced_at: null

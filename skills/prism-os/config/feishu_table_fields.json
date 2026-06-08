@@ -1,0 +1,34 @@
+[
+  {"name": "文章ID", "type": "text", "description": "主键，格式：标题_YYYYMMDD"},
+  {"name": "标题", "type": "text"},
+  {"name": "平台", "type": "select", "multiple": false, "options": [
+    {"name": "wechat", "hue": "Blue", "lightness": "Light"},
+    {"name": "xiaohongshu", "hue": "Carmine", "lightness": "Light"}
+  ]},
+  {"name": "发布时间", "type": "datetime"},
+  {"name": "原始命题", "type": "text", "description": "PRISM-OS gateway 输入"},
+  {"name": "叙事策略", "type": "text", "description": "观点碰撞型/数据驱动型/悬念解密型/人物线索型/时间线型"},
+  {"name": "字数", "type": "number", "style": {"type": "plain", "precision": 0}},
+  {"name": "预测HKR", "type": "number", "style": {"type": "plain", "precision": 3}, "description": "棱镜引擎打分 0-1"},
+  {"name": "预测质量分", "type": "number", "style": {"type": "plain", "precision": 0}, "description": "quality_check 输出 0-100"},
+  {"name": "CCOS模块", "type": "select", "multiple": true, "options": [
+    {"name": "HOOK", "hue": "Red", "lightness": "Light"},
+    {"name": "CASE", "hue": "Orange", "lightness": "Light"},
+    {"name": "EXPLAIN", "hue": "Yellow", "lightness": "Light"},
+    {"name": "MODEL", "hue": "Green", "lightness": "Light"},
+    {"name": "COUNTER", "hue": "Turquoise", "lightness": "Light"},
+    {"name": "EVIDENCE", "hue": "Blue", "lightness": "Light"},
+    {"name": "ACTION", "hue": "Purple", "lightness": "Light"},
+    {"name": "BOUNDARY", "hue": "Gray", "lightness": "Light"}
+  ]},
+  {"name": "时间点", "type": "select", "multiple": false, "options": [
+    {"name": "t_plus_1d", "hue": "Green", "lightness": "Lighter"},
+    {"name": "t_plus_7d", "hue": "Blue", "lightness": "Lighter"},
+    {"name": "t_plus_30d", "hue": "Purple", "lightness": "Lighter"}
+  ]},
+  {"name": "阅读量", "type": "number", "style": {"type": "plain", "precision": 0}, "description": "用户填：累计阅读次数"},
+  {"name": "转发量", "type": "number", "style": {"type": "plain", "precision": 0}, "description": "用户填：累计转发次数"},
+  {"name": "收藏量", "type": "number", "style": {"type": "plain", "precision": 0}, "description": "用户填：累计收藏次数"},
+  {"name": "点赞量", "type": "number", "style": {"type": "plain", "precision": 0}, "description": "用户填：累计点赞次数"},
+  {"name": "评论数", "type": "number", "style": {"type": "plain", "precision": 0}, "description": "用户填：累计评论条数"}
+]

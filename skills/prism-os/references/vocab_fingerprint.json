@@ -1,0 +1,60 @@
+{
+  "cliche_patterns": [
+    {"pattern": "必须知道的.*个.*", "reason": "标题党模板", "severity": 0.9},
+    {"pattern": ".*让你.*", "reason": "说教式开头", "severity": 0.7},
+    {"pattern": "震惊.*", "reason": "低质量引流词", "severity": 0.8},
+    {"pattern": ".*必看.*", "reason": "强制点击话术", "severity": 0.7},
+    {"pattern": ".*绝了.*", "reason": "网络用语", "severity": 0.5},
+    {"pattern": ".*太.*了.*", "reason": "情绪化表达", "severity": 0.6},
+    {"pattern": "不看后悔.*", "reason": "焦虑营销", "severity": 0.8},
+    {"pattern": ".*秘籍.*", "reason": "夸大宣传", "severity": 0.6}
+  ],
+  "user_vocabulary": {
+    "high_performing_words": [
+      "认知",
+      "裂缝",
+      "框架",
+      "底层逻辑",
+      "本质",
+      "重构",
+      "解构",
+      "颠覆"
+    ],
+    "low_performing_words": [
+      "技巧",
+      "方法",
+      "秘诀",
+      "诀窍",
+      "妙招"
+    ]
+  },
+  "dimension_preferences": {
+    "reversal": {
+      "preferred": ["为什么", "其实", "真相", "才是"],
+      "avoided": ["必须", "千万", "一定"]
+    },
+    "micro_scene": {
+      "preferred": ["当", "在", "时", "程序员", "职场人", "老板"],
+      "avoided": ["大家", "所有人", "人们"]
+    },
+    "systemic_flaw": {
+      "preferred": ["系统", "结构", "机制", "教育", "社会"],
+      "avoided": ["都是", "全是", "一切"]
+    },
+    "bridge": {
+      "preferred": ["如何", "怎么", "用", "通过", "方法"],
+      "avoided": ["简单", "轻松", "容易"]
+    }
+  },
+  "replacement_map": {
+    "赋能": "驱动",
+    "降维打击": "认知升级",
+    "破圈": "突破边界",
+    "必须知道": "需要了解",
+    "震惊": "引人关注",
+    "绝了": "令人惊叹",
+    "太棒了": "值得关注",
+    "赶紧": "立即",
+    "速看": "推荐阅读"
+  }
+}

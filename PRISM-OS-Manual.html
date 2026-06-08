@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISM-OS 使用手册</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #16161f;
+            --bg-card-hover: #1c1c28;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-tertiary: #ec4899;
+            --text-primary: #f1f1f4;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border-subtle: rgba(255,255,255,0.06);
+            --border-accent: rgba(99,102,241,0.3);
+            --gradient-hero: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            --gradient-card: linear-gradient(180deg, rgba(99,102,241,0.08) 0%, rgba(139,92,246,0.04) 100%);
+            --shadow-glow: 0 0 60px rgba(99,102,241,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        ::selection {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 3px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            padding: 4rem 2rem;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(99,102,241,0.08) 0%, transparent 50%);
+            animation: pulse-glow 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(to top, var(--bg-primary), transparent);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-accent);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            font-weight: 300;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 8rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            z-index: 2;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
+        }
+
+        .scroll-hint svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(10,10,15,0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(-100%);
+            transition: all 0.3s ease;
+        }
+
+        .nav.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .nav-logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Sections */
+        section {
+            padding: 8rem 0;
+            position: relative;
+        }
+
+        section:nth-child(even) {
+            background: var(--bg-secondary);
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+
+        .section-label::before {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: var(--accent-primary);
+        }
+
+        h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .section-intro {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 3rem;
+            font-weight: 300;
+        }
+
+        /* Scenario Cards */
+        .scenario {
+            margin-bottom: 6rem;
+        }
+
+        .scenario-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .scenario-number {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-card);
+            border: 1px solid var(--border-accent);
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .scenario-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .comparison-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .comparison-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .comparison-card.before::before {
+            background: linear-gradient(90deg, #ef4444, #f97316);
+        }
+
+        .comparison-card.after::before {
+            background: var(--gradient-hero);
+        }
+
+        .comparison-card:hover {
+            border-color: var(--border-accent);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .comparison-label {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .before .comparison-label {
+            background: rgba(239,68,68,0.1);
+            color: #ef4444;
+        }
+
+        .after .comparison-label {
+            background: rgba(99,102,241,0.1);
+            color: var(--accent-primary);
+        }
+
+        .comparison-content {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .comparison-content code {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(99,102,241,0.1);
+            color: var(--accent-secondary);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .comparison-content .highlight {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Chat Demo */
+        .chat-demo {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-demo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-hero);
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .chat-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .chat-dot.active {
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        .chat-message {
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-message.user {
+            color: var(--accent-tertiary);
+        }
+
+        .chat-message.system {
+            color: var(--text-secondary);
+        }
+
+        .chat-message.prism {
+            color: var(--accent-primary);
+        }
+
+        .chat-message .prefix {
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+
+        .chat-divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .chat-divider::before,
+        .chat-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-subtle);
+        }
+
+        /* Problem Grid */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .problem-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .problem-card:hover {
+            border-color: var(--border-accent);
+            transform: translateY(-2px);
+        }
+
+        .problem-card .icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-card);
+            border: 1px solid var(--border-accent);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .problem-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .problem-card .before-text {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .problem-card .after-text {
+            color: #10b981;
+            font-size: 0.85rem;
+        }
+
+        .arrow {
+            display: block;
+            text-align: center;
+            color: var(--accent-primary);
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        /* Summary Section */
+        .summary {
+            padding: 8rem 0;
+            background: var(--bg-secondary);
+        }
+
+        .summary h2 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .summary-intro {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 4rem;
+            font-size: 1.1rem;
+        }
+
+        .summary-quote {
+            text-align: center;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 300;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .summary-quote strong {
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem 0;
+            text-align: center;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        footer p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Utility */
+        .text-gradient {
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .mt-4 { margin-top: 4rem; }
+        .mt-6 { margin-top: 6rem; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-logo">PRISM-OS</div>
+        <ul class="nav-links">
+            <li><a href="#scenario1">日常创作</a></li>
+            <li><a href="#scenario2">主动发现</a></li>
+            <li><a href="#scenario3">认知地图</a></li>
+            <li><a href="#scenario4">诊断追溯</a></li>
+            <li><a href="#scenario5">刺客预警</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge">
+                <span>AI 驱动的认知策划搭档</span>
+            </div>
+            <h1>PRISM-OS</h1>
+            <p>有记忆、能学习、主动发现选题的智能策划系统。<br>从「你命令它工作」变成「它陪你策划」。</p>
+        </div>
+        <div class="scroll-hint">
+            <span>向下滚动探索</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M19 12l-7 7-7-7"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Scenario 1 -->
+    <section id="scenario1">
+        <div class="container">
+            <div class="scenario">
+                <div class="scenario-header">
+                    <div class="scenario-number">01</div>
+                    <h2 class="scenario-title">日常创作</h2>
+                </div>
+                <p class="section-intro">坐下来想写点东西，系统帮你搞定一切。</p>
+
+                <div class="comparison">
+                    <div class="comparison-card before">
+                        <span class="comparison-label">以前</span>
+                        <div class="comparison-content">
+                            <p><span class="highlight">"最近想写点东西"</span></p>
+                            <p style="margin-top: 1rem;">→ 系统追问"你想写什么方向"</p>
+                            <p>→ 你得自己想选题</p>
+                            <p>→ 自己判断有没有人写过</p>
+                            <p>→ 自己承担标题风险</p>
+                        </div>
+                    </div>
+                    <div class="comparison-card after">
+                        <span class="comparison-label">以后</span>
+                        <div class="comparison-content">
+                            <p><code>你：最近想写点东西</code></p>
+                            <p style="margin-top: 1rem;"><code>PRISM-OS：检测到选题需求。是否用 PRISM-OS 生成标题？（yes/no）</code></p>
+                            <p style="margin-top: 1rem;"><code>你：yes</code></p>
+                            <p>→ <span class="highlight">12个候选，按偏好排序输出</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-demo">
+                    <div class="chat-header">
+                        <div class="chat-dot active"></div>
+                        <div class="chat-dot"></div>
+                        <div class="chat-dot"></div>
+                        <span style="margin-left: 0.5rem; color: var(--text-muted); font-size: 0.8rem;">PRISM-OS 交互</span>
+                    </div>
+
+                    <div class="chat-message system">
+                        <span class="prefix">PRISM-OS：</span>检测到选题需求。是否用 PRISM-OS 生成标题？（yes/no）
+                    </div>
+                    <div class="chat-message user">
+                        <span class="prefix">你：</span>yes
+                    </div>
+                    <div class="chat-message prism">
+                        <span class="prefix">→</span> 候选标题（按你的偏好排序）
+                    </div>
+                    <div class="chat-message prism">
+                        <span class="prefix">①</span> [逆向拆解] 为什么"努力"是AI时代最被高估的品质？
+                    </div>
+                    <div class="chat-message prism">
+                        <span class="prefix">②</span> [微观切片] 一个中年程序员被AI辅助写作逼疯的全过程
+                    </div>
+                    <div class="chat-message prism">
+                        <span class="prefix">③</span> [系统归因] 为什么教育系统让聪明人变傻？
+                    </div>
+
+                    <div class="chat-divider">素材缺口分析</div>
+
+                    <div class="chat-message prism">
+                        <span class="prefix">■</span> 素材缺口<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;当前就绪度: 52%<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;缺口: XX数据、XX案例<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;建议: 补充2个关键素材后再创作
+                    </div>
+
+                    <div class="chat-divider">双端大纲</div>
+
+                    <div class="chat-message prism">
+                        <span class="prefix">📝</span> 公众号版: [大纲内容]<br>
+                        <span class="prefix">📕</span> 小红书版: [大纲内容 + 5个标签]
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scenario 2 -->
+    <section id="scenario2">
+        <div class="container">
+            <div class="scenario">
+                <div class="scenario-header">
+                    <div class="scenario-number">02</div>
+                    <h2 class="scenario-title">主动发现</h2>
+                </div>
+                <p class="section-intro">系统在后台扫描信息源，发现选题机会后主动推送你。</p>
+
+                <div class="chat-demo" style="background: linear-gradient(180deg, rgba(236,72,153,0.05) 0%, var(--bg-card) 100%);">
+                    <div class="chat-header">
+                        <div class="chat-dot active"></div>
+                        <div class="chat-dot"></div>
+                        <div class="chat-dot"></div>
+                        <span style="margin-left: 0.5rem; color: var(--text-muted); font-size: 0.8rem;">PRISM-OS 主动推送</span>
+                    </div>
+
+                    <div class="chat-message prism" style="border: 1px solid rgba(236,72,153,0.3); border-radius: 12px; padding: 1.5rem; background: rgba(236,72,153,0.05);">
+                        <span class="prefix" style="color: var(--accent-tertiary);">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span><br>
+                        <span class="prefix" style="color: var(--accent-tertiary);">【PRISM-OS 主动发现】</span><br><br>
+                        <span class="prefix" style="font-size: 1.5rem;">💡</span> 检测到认知裂缝<br><br>
+                        <span class="prefix">共识：</span>AI会让程序员大量失业<br>
+                        <span class="prefix">现实：</span>最新数据显示程序员岗位增长15%<br><br>
+                        <span class="prefix">裂缝类型：</span>数据裂缝 | 置信度：88%<br><br>
+                        <span class="prefix">建议选题方向：</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;1. 为什么AI时代程序员反而更值钱了？<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;2. 被高估的AI失业恐惧：数据背后的真相<br><br>
+                        <span class="prefix">是否基于这个裂缝生成标题？（yes/no）</span><br>
+                        <span class="prefix" style="color: var(--accent-tertiary);">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scenario 3 -->
+    <section id="scenario3">
+        <div class="container">
+            <div class="scenario">
+                <div class="scenario-header">
+                    <div class="scenario-number">03</div>
+                    <h2 class="scenario-title">认知地图</h2>
+                </div>
+                <p class="section-intro">系统分析你的选题历史，揭示思维定势和认知盲区。</p>
+
+                <div class="chat-demo">
+                    <div class="chat-header">
+                        <div class="chat-dot active"></div>
+                        <div class="chat-dot"></div>
+                        <div class="chat-dot"></div>
+                        <span style="margin-left: 0.5rem; color: var(--text-muted); font-size: 0.8rem;">你输入 /prism-topology</span>
+                    </div>
+
+                    <div class="chat-message user">
+                        <span class="prefix">你：</span>/prism-topology
+                    </div>
+                    <div class="chat-message prism">
+                        <span class="prefix">→</span> 你的认知地图
+                    </div>
+
+                    <div class="chat-divider">过度开发区</div>
+
+                    <div class="chat-message prism">
+                        <span class="prefix" style="color: #f97316;">●</span> AI：出现 23 次 <span style="color: #f97316;">（思维定势预警）</span><br>
+                        <span class="prefix" style="color: #f97316;">●</span> 努力：出现 17 次<br>
+                        <span class="prefix" style="color: #f97316;">●</span> 程序员：出现 12 次
+                    </div>
+
+                    <div class="chat-divider">未触及区</div>
+
+                    <div class="chat-message prism">
+                        <span class="prefix" style="color: #10b981;">●</span> 家庭：出现 0 次<br>
+                        <span class="prefix" style="color: #10b981;">●</span> 身体：出现 0 次<br>
+                        <span class="prefix" style="color: #10b981;">●</span> 亲密关系：出现 1 次
+                    </div>
+
+                    <div class="chat-divider">建议探索方向</div>
+
+                    <div class="chat-message prism">
+                        <span class="prefix">→</span> 从"个人努力"转向"结构性因素"<br>
+                        <span class="prefix">→</span> "程序员"之外的职业群体
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scenario 4 -->
+    <section id="scenario4">
+        <div class="container">
+            <div class="scenario">
+                <div class="scenario-header">
+                    <div class="scenario-number">04</div>
+                    <h2 class="scenario-title">诊断追溯</h2>
+                </div>
+                <p class="section-intro">任何时候可以回溯系统决策，透明化推理过程。</p>
+
+                <div class="chat-demo">
+                    <div class="chat-header">
+                        <div class="chat-dot active"></div>
+                        <div class="chat-dot"></div>
+                        <div class="chat-dot"></div>
+                        <span style="margin-left: 0.5rem; color: var(--text-muted); font-size: 0.8rem;">你输入 /prism-diagnostic</span>
+                    </div>
+
+                    <div class="chat-message user">
+                        <span class="prefix">你：</span>/prism-diagnostic
+                    </div>
+                    <div class="chat-message prism">
+                        <span class="prefix">→</span> 最近一次推理链诊断
+                    </div>
+                    <div class="chat-message prism">
+                        <span class="prefix">输入：</span>"为什么努力工作让我更穷"<br>
+                        <span class="prefix">输入类型：</span>sentence<br>
+                        <span class="prefix">熵值：</span>0.72
+                    </div>
+
+                    <div class="chat-divider">推理过程</div>
+
+                    <div class="chat-message prism">
+                        <span class="prefix">1.</span> classify_input → sentence（置信度 0.95）<br>
+                        <span class="prefix">2.</span> calculate_entropy →<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- object_clarity: 0.6（中等）<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- conflict_tension: 0.8（较强）<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- fact_support: 0.7（有案例）<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 综合: 0.72<br>
+                        <span class="prefix">3.</span> decision → pass
+                    </div>
+
+                    <div class="chat-message prism" style="margin-top: 1rem; color: var(--text-muted);">
+                        <span class="prefix">→</span> 是否合理？如有异议请反馈。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scenario 5 -->
+    <section id="scenario5">
+        <div class="container">
+            <div class="scenario">
+                <div class="scenario-header">
+                    <div class="scenario-number">05</div>
+                    <h2 class="scenario-title">刺客预警</h2>
+                </div>
+                <p class="section-intro">系统自动检测历史爆款，帮你发现可以逻辑反转的命题。</p>
+
+                <div class="chat-demo" style="background: linear-gradient(180deg, rgba(139,92,246,0.05) 0%, var(--bg-card) 100%);">
+                    <div class="chat-header">
+                        <div class="chat-dot active"></div>
+                        <div class="chat-dot"></div>
+                        <div class="chat-dot"></div>
+                        <span style="margin-left: 0.5rem; color: var(--text-muted); font-size: 0.8rem;">刺客机制触发</span>
+                    </div>
+
+                    <div class="chat-message prism" style="border: 1px solid rgba(139,92,246,0.3); border-radius: 12px; padding: 1.5rem; background: rgba(139,92,246,0.05);">
+                        <span class="prefix" style="color: var(--accent-secondary);">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span><br>
+                        <span class="prefix" style="color: var(--accent-secondary);">【PRISM-OS 刺客提醒】</span><br><br>
+                        <span class="prefix">检测到历史爆款命题可以被逻辑反转：</span><br><br>
+                        <span class="prefix">你的历史爆款：</span>"为什么努力工作让你更穷？"（2025-12，阅读量 50000）<br><br>
+                        <span class="prefix">反转建议：</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight">命题：</span>"为什么'不努力'反而是另一种陷阱？"<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight">策略：</span>前提质疑（挑战"努力一定有回报"这个隐含假设）<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="highlight">新证据：</span>...<br><br>
+                        <span class="prefix">是否基于这个反转生成标题？（yes/no）</span><br>
+                        <span class="prefix" style="color: var(--accent-secondary);">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Summary -->
+    <section class="summary">
+        <div class="container">
+            <h2>解决的核心问题</h2>
+            <p class="summary-intro">从「你命令它工作」变成「它陪你策划」</p>
+
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <div class="icon">💡</div>
+                    <h4>选题想不出来</h4>
+                    <p class="before-text">✗ 自己想，压力全在用户</p>
+                    <p class="after-text">✓ 12个候选，按偏好排序</p>
+                </div>
+                <div class="problem-card">
+                    <div class="icon">🔍</div>
+                    <h4>不知道有没有人写过</h4>
+                    <p class="before-text">✗ 凭印象猜</p>
+                    <p class="after-text">✓ 现实校验锚查重</p>
+                </div>
+                <div class="problem-card">
+                    <div class="icon">📦</div>
+                    <h4>素材缺口不知道</h4>
+                    <p class="before-text">✗ 写的时候发现</p>
+                    <p class="after-text">✓ Phase 4 主动报告</p>
+                </div>
+                <div class="problem-card">
+                    <div class="icon">⚠️</div>
+                    <h4>标题党风险</h4>
+                    <p class="before-text">✗ 写完才知道</p>
+                    <p class="after-text">✓ 逻辑压力测试提前检测</p>
+                </div>
+                <div class="problem-card">
+                    <div class="icon">🔧</div>
+                    <h4>系统不稳定</h4>
+                    <p class="before-text">✗ LLM 调用说挂就挂</p>
+                    <p class="after-text">✓ Gateway 自动验证+重试</p>
+                </div>
+                <div class="problem-card">
+                    <div class="icon">🗺️</div>
+                    <h4>不知道思维定势</h4>
+                    <p class="before-text">✗ 不自知</p>
+                    <p class="after-text">✓ 知识拓扑主动揭示</p>
+                </div>
+                <div class="problem-card">
+                    <div class="icon">📡</div>
+                    <h4>选题机会靠人工发现</h4>
+                    <p class="before-text">✗ 每天自己刷信息流</p>
+                    <p class="after-text">✓ RSS Monitor + 主动推送</p>
+                </div>
+                <div class="problem-card">
+                    <div class="icon">⚔️</div>
+                    <h4>写重复了不自知</h4>
+                    <p class="before-text">✗ 发出去才发现</p>
+                    <p class="after-text">✓ 刺客机制提前预警</p>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <p class="summary-quote">
+                    PRISM-OS 从<span strong>被动工具</span>变成<span strong>主动策划搭档</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>PRISM-OS 使用手册 · 架构先行路线 v2.0</p>
+        </div>
+    </footer>
+
+    <script>
+        // Show nav on scroll
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > window.innerHeight * 0.5) {
+                nav.classList.add('visible');
+            } else {
+                nav.classList.remove('visible');
+            }
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scenario, .problem-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

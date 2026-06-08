@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRISM-OS | 认知进化全周期手册</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        :root {
+            --bg: #020617;
+            --bg-soft: #0b1628;
+            --bg-card: #0f1e35;
+            --cyan: #00f2ff;
+            --cyan-dim: #00c8d4;
+            --purple: #8b5cf6;
+            --purple-dim: #7c3ded;
+            --red: #f43f5e;
+            --text: #c8d4e0;
+            --text-dim: #6b7a8a;
+            --text-bright: #e8f0f8;
+            --border: rgba(255,255,255,0.07);
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 17px;
+            line-height: 1.75;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── HEADER ── */
+        .site-header {
+            position: relative;
+            min-height: 92vh;
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 0 3rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            overflow: hidden;
+        }
+        .site-header::before {
+            content: '';
+            position: absolute; inset: 0; pointer-events: none;
+            background:
+                radial-gradient(ellipse 60% 70% at 80% 40%, rgba(0,242,255,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 50% at 10% 90%, rgba(139,92,246,0.06) 0%, transparent 60%);
+        }
+        .site-header::after {
+            content: '';
+            position: absolute; inset: 0; pointer-events: none;
+            background-image:
+                linear-gradient(rgba(0,242,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,242,255,0.025) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: radial-gradient(ellipse 90% 80% at 50% 0%, black 30%, transparent 80%);
+        }
+        .header-inner { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto; width: 100%; }
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 1rem;
+            font-family: 'Sora', sans-serif;
+            font-size: 0.8rem; font-weight: 600; letter-spacing: 0.25em;
+            text-transform: uppercase; color: var(--cyan);
+            margin-bottom: 2rem;
+            opacity: 0; animation: fadeIn 0.6s 0.15s ease forwards;
+        }
+        .eyebrow::before { content: ''; width: 30px; height: 1px; background: var(--cyan); }
+        .hero-title {
+            font-family: 'Sora', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5.5rem);
+            font-weight: 800;
+            line-height: 1.08;
+            letter-spacing: -0.02em;
+            color: var(--text-bright);
+            margin-bottom: 2rem;
+            opacity: 0; animation: slideUp 0.9s 0.25s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        .hero-title .accent {
+            background: linear-gradient(135deg, #fff 30%, var(--cyan) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-desc {
+            font-size: 1.15rem; font-weight: 300;
+            color: var(--text-dim); max-width: 56ch; margin-bottom: 3rem;
+            opacity: 0; animation: slideUp 0.8s 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        .hero-desc .bright { color: var(--text-bright); font-weight: 600; }
+        .hero-actions {
+            display: flex; gap: 1.2rem; flex-wrap: wrap;
+            opacity: 0; animation: slideUp 0.8s 0.55s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            padding: 1rem 2.8rem;
+            background: var(--cyan); color: var(--bg);
+            border-radius: 100px; font-weight: 700; font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+            position: relative; overflow: hidden;
+        }
+        .btn-primary::before {
+            content: ''; position: absolute; inset: 0;
+            background: var(--cyan-dim);
+            transform: translateX(-101%); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .btn-primary:hover::before { transform: translateX(0); }
+        .btn-primary span { position: relative; z-index: 1; }
+        .btn-ghost {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            padding: 1rem 2.8rem;
+            border: 1.5px solid rgba(255,255,255,0.2); color: var(--text-bright);
+            border-radius: 100px; font-weight: 600; font-size: 1rem;
+            text-decoration: none; transition: all 0.3s;
+        }
+        .btn-ghost:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.05); }
+
+        /* Prism icon */
+        .prism-icon {
+            width: 52px; height: 52px;
+            background: rgba(0,242,255,0.1); border: 1px solid rgba(0,242,255,0.2);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; color: var(--cyan);
+            flex-shrink: 0;
+        }
+
+        /* ── SECTION SHARED ── */
+        .section { padding: 8rem 3rem; }
+        .section-inner { max-width: 1200px; margin: 0 auto; }
+        .section-label {
+            display: inline-flex; align-items: center; gap: 0.8rem;
+            font-family: 'Sora', sans-serif;
+            font-size: 0.78rem; font-weight: 600;
+            letter-spacing: 0.2em; text-transform: uppercase;
+            margin-bottom: 2rem;
+        }
+        .label-cyan { color: var(--cyan); }
+        .label-purple { color: var(--purple); }
+        .label-red { color: var(--red); }
+        .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent); border: none; margin: 0; }
+
+        /* ── FEATURE CARDS ── */
+        .feat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px; padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+            position: relative; overflow: hidden;
+        }
+        .feat-card:hover {
+            background: rgba(15,30,53,0.95);
+            transform: translateY(-5px);
+            border-color: rgba(0,242,255,0.2);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3), 0 0 40px rgba(0,242,255,0.05);
+        }
+        .feat-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, var(--accent-color, var(--cyan)), transparent);
+            opacity: 0; transition: opacity 0.4s;
+        }
+        .feat-card:hover::before { opacity: 1; }
+        .feat-icon {
+            width: 56px; height: 56px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; margin-bottom: 1.5rem;
+            background: rgba(var(--accent-rgb, 0,242,255), 0.1);
+            border: 1px solid rgba(var(--accent-rgb, 0,242,255), 0.2);
+        }
+        .feat-title {
+            font-size: 1.25rem; font-weight: 700; color: var(--text-bright); margin-bottom: 1rem;
+        }
+        .feat-text {
+            font-size: 1rem; color: var(--text-dim); line-height: 1.8; font-weight: 300;
+        }
+        .feat-text strong { color: var(--text-bright); font-weight: 600; }
+
+        /* Chart bar */
+        .chart-bar {
+            height: 5px; border-radius: 3px;
+            background: rgba(255,255,255,0.08);
+            overflow: hidden; margin-top: 0.8rem;
+        }
+        .chart-fill {
+            height: 100%; border-radius: 3px;
+            background: var(--cyan);
+            transition: width 1s cubic-bezier(0.16,1,0.3,1);
+        }
+        .chart-fill.purple { background: var(--purple); }
+        .chart-label {
+            display: flex; justify-content: space-between;
+            font-size: 0.8rem; margin-top: 0.5rem;
+        }
+        .chart-hint { color: var(--text-dim); }
+        .chart-val { color: var(--cyan); font-weight: 600; }
+
+        /* Tag pills */
+        .tag {
+            display: inline-flex; align-items: center;
+            padding: 0.35rem 0.9rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 100px; font-size: 0.82rem; color: var(--text-dim);
+        }
+
+        /* Score ring */
+        .score-ring {
+            width: 64px; height: 64px; border-radius: 50%;
+            border: 2px solid var(--purple);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; font-weight: 700; color: var(--purple);
+            flex-shrink: 0;
+        }
+
+        /* Category label */
+        .cat-label {
+            display: flex; align-items: center; gap: 1rem;
+            margin-bottom: 3rem;
+        }
+        .cat-label h2 {
+            font-family: 'Sora', sans-serif;
+            font-size: 0.82rem; font-weight: 700;
+            letter-spacing: 0.2em; text-transform: uppercase; white-space: nowrap;
+        }
+        .cat-label .line { flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
+
+        /* ── PROCESS SECTION ── */
+        .process-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+        .flow-step { display: flex; gap: 1.5rem; align-items: flex-start; padding-bottom: 3rem; }
+        .flow-step:last-child { padding-bottom: 0; }
+        .flow-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--cyan); flex-shrink: 0;
+            box-shadow: 0 0 14px var(--cyan); margin-top: 0.5rem;
+        }
+        .flow-connector { width: 1px; flex: 1; background: rgba(255,255,255,0.06); margin-left: 4px; margin-top: 4px; }
+        .flow-step-title { font-size: 1.05rem; font-weight: 700; color: var(--text-bright); margin-bottom: 0.3rem; }
+        .flow-step-desc { font-size: 0.95rem; color: var(--text-dim); font-weight: 300; }
+
+        /* Table */
+        .glass-table {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px; padding: 2rem;
+        }
+        .glass-table table { width: 100%; border-collapse: collapse; }
+        .glass-table th {
+            font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--text-dim);
+            text-align: left; padding: 0 1rem 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .glass-table th:last-child { color: var(--cyan); }
+        .glass-table td {
+            font-size: 1rem; padding: 1.2rem 1rem 1.2rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: var(--text-dim);
+        }
+        .glass-table td:last-child { color: var(--text-bright); font-weight: 600; }
+        .glass-table tr:last-child td { border-bottom: none; }
+
+        /* ── CASE STUDIES ── */
+        .case-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px; padding: 2.5rem;
+        }
+        .case-tag {
+            font-family: 'Sora', sans-serif;
+            font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--text-dim); margin-bottom: 1rem;
+        }
+        .case-before { margin-bottom: 1.5rem; }
+        .case-before-label { font-size: 0.85rem; color: var(--red); font-weight: 600; margin-bottom: 0.4rem; }
+        .case-before-text { font-size: 1rem; color: var(--text-dim); font-style: italic; font-weight: 300; }
+        .case-arrow { text-align: center; color: var(--cyan); font-size: 1.2rem; margin-bottom: 1.5rem; }
+        .case-after { padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.06); }
+        .case-after-label { font-size: 0.85rem; color: var(--cyan); font-weight: 600; margin-bottom: 0.4rem; }
+        .case-after-text { font-size: 1.05rem; color: var(--text-bright); font-weight: 600; line-height: 1.6; }
+
+        /* ── CTA FOOTER ── */
+        .cta-footer {
+            padding: 10rem 3rem;
+            position: relative; overflow: hidden;
+            text-align: center;
+        }
+        .cta-footer::before {
+            content: ''; position: absolute; inset: 0; pointer-events: none;
+            background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,242,255,0.04) 0%, transparent 70%);
+        }
+        .cta-inner { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
+        .cta-title {
+            font-family: 'Sora', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 800; color: var(--text-bright);
+            line-height: 1.3; margin-bottom: 1.5rem;
+        }
+        .cta-desc {
+            font-size: 1.05rem; color: var(--text-dim); font-weight: 300;
+            margin-bottom: 3rem; line-height: 1.8;
+        }
+        .cta-box {
+            display: inline-flex; flex-direction: column; align-items: center;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px; padding: 2rem 3rem;
+            transition: all 0.4s;
+        }
+        .cta-box:hover { background: rgba(255,255,255,0.06); border-color: rgba(0,242,255,0.15); }
+        .cta-hint { font-size: 0.88rem; color: var(--text-dim); margin-bottom: 0.5rem; font-weight: 300; }
+        .cta-kw {
+            font-size: 1.5rem; font-weight: 800;
+            letter-spacing: 0.1em; color: var(--text-bright);
+        }
+        .footer-bar {
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding: 2.5rem 3rem;
+            text-align: center;
+        }
+        .footer-text {
+            font-family: 'Sora', sans-serif;
+            font-size: 0.72rem; letter-spacing: 0.2em;
+            text-transform: uppercase; color: var(--text-dim);
+        }
+
+        /* ── ANIMATIONS ── */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(36px); }
+            to { opacity: 1; transform: none; }
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16,1,0.3,1); }
+        .reveal.visible { opacity: 1; transform: none; }
+
+        button { border: none; background: none; font-family: inherit; cursor: pointer; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .process-grid { grid-template-columns: 1fr; gap: 3rem; }
+            .section { padding: 5rem 1.5rem; }
+            .site-header { padding: 0 1.5rem; min-height: 80vh; }
+            .feat-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 600px) {
+            body { font-size: 16px; }
+            .hero-actions { flex-direction: column; }
+            .btn-primary, .btn-ghost { text-align: center; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="header-inner">
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;opacity:0;animation:fadeIn 0.6s 0.1s ease forwards;">
+                <div class="prism-icon"><i class="fas fa-prism"></i></div>
+                <span class="eyebrow" style="margin-bottom:0;">PRISM-OS System</span>
+            </div>
+            <h1 class="hero-title">
+                拒绝平庸叙事，<br><span class="accent">重塑认知主权。</span>
+            </h1>
+            <p class="hero-desc">
+                PRISM-OS 是一套专为内容创作者设计的<span class="bright">认知进化引擎</span>。它通过逻辑审计与多维拆解，解决 AI 时代"内容同质化、逻辑浅薄、缺乏洞察"的根本问题，帮你从平庸的共识中切开一道通往真相的裂缝。
+            </p>
+            <div class="hero-actions">
+                <a href="#modules" class="btn-primary"><span>开启进化</span></a>
+                <a href="#cases" class="btn-ghost">查看案例</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MODULE 01: 认知准入 -->
+    <section class="section" id="modules">
+        <div class="section-inner">
+            <div class="cat-label reveal">
+                <h2 class="label-cyan">01 / 认知准入</h2>
+                <div class="line"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6 feat-grid">
+                <div class="feat-card reveal" style="--accent-color: var(--cyan); --accent-rgb: 0,242,255;">
+                    <div class="feat-icon" style="color:var(--cyan);background:rgba(0,242,255,0.1);border-color:rgba(0,242,255,0.2);">
+                        <i class="fas fa-filter"></i>
+                    </div>
+                    <h3 class="feat-title">苏格拉底网关 (Socratic Gateway)</h3>
+                    <p class="feat-text">
+                        <strong>解决问题：</strong> 拒绝"拍脑袋"的模糊灵感。<br>
+                        <strong>价值：</strong> 通过"熵值计算"拦截情绪化、空洞的命题，强制你进行深度思考，直到命题清晰、有力。<br>
+                        <strong>Phase 4.7：</strong>熵值计算已优化为纯公式实现（1次→0次 LLM 调用）
+                    </p>
+                    <div style="background:rgba(0,0,0,0.3);padding:1.2rem;border-radius:12px;border:1px solid rgba(255,255,255,0.05);margin-top:1.5rem;">
+                        <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:0.6rem;letter-spacing:0.05em;">意图清晰度分析</div>
+                        <div class="chart-bar"><div class="chart-fill" style="width:85%;"></div></div>
+                        <div class="chart-label">
+                            <span class="chart-hint">熵值</span>
+                            <span class="chart-val">2.8 <span style="color:var(--text-dim);font-weight:300;">(建议放行)</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="feat-card reveal" style="--accent-color: var(--cyan); animation-delay:0.1s;">
+                    <div class="feat-icon" style="color:var(--cyan);background:rgba(0,242,255,0.1);border-color:rgba(0,242,255,0.2);">
+                        <i class="fas fa-vector-square"></i>
+                    </div>
+                    <h3 class="feat-title">四维正交引擎 (Prism Engine)</h3>
+                    <p class="feat-text">
+                        <strong>解决问题：</strong> 避免选题角度单一、换汤不换药。<br>
+                        <strong>价值：</strong> 强制从"逆向、微观、系统、脚手架"四个完全互斥的维度拆解命题，确保你总能找到别人看不见的切入点。
+                    </p>
+                    <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:1.5rem;">
+                        <span class="tag">逆向</span>
+                        <span class="tag">微观</span>
+                        <span class="tag">系统</span>
+                        <span class="tag">脚手架</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- MODULE 02: CCOS 认知推进流 -->
+    <section class="section" style="padding:6rem 3rem;background:rgba(0,242,255,0.02);">
+        <div class="section-inner">
+            <div class="cat-label reveal">
+                <h2 class="label-cyan">02 / 认知推进流</h2>
+                <div class="line"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;">
+                <div class="feat-card reveal" style="--accent-color:var(--cyan);--accent-rgb:0,242,255;">
+                    <div class="feat-icon" style="color:var(--cyan);background:rgba(0,242,255,0.1);border-color:rgba(0,242,255,0.2);">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="feat-title">CCOS v2.0 认知推进流大纲</h3>
+                    <p class="feat-text">
+                        <strong>解决问题：</strong> 大纲空洞、模块堆砌、缺乏认知张力。<br>
+                        <strong>价值：</strong> 从 Layer 0 对齐追问到 Layer 8 势能设计，生成含14项输出的动态认知大纲，适配公众号/小红书双平台。<br>
+                        <strong>Phase 4.7：</strong>Layer 2 并行化 + 双平台共享缓存（18次→12次）
+                    </p>
+                    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1.2rem;">
+                        <span class="tag" style="border-color:rgba(0,242,255,0.2);color:var(--cyan);">Layer 0 认知对齐</span>
+                        <span class="tag" style="border-color:rgba(0,242,255,0.2);color:var(--cyan);">14项动态大纲</span>
+                        <span class="tag" style="border-color:rgba(0,242,255,0.2);color:var(--cyan);">双平台差异化</span>
+                        <span class="tag" style="border-color:rgba(0,242,255,0.2);color:var(--cyan);">认知模块流</span>
+                    </div>
+                </div>
+                <div class="feat-card reveal" style="--accent-color:var(--cyan);animation-delay:0.1s;">
+                    <h3 class="feat-title" style="font-size:1rem;margin-bottom:1.5rem;">14项动态认知大纲</h3>
+                    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+                        <div style="display:flex;align-items:stretch;gap:1rem;">
+                            <div style="flex:0 0 110px;font-size:0.82rem;color:var(--text-dim);padding:0.6rem 0.8rem;background:rgba(0,0,0,0.25);border-radius:10px;display:flex;align-items:center;">内容目标</div>
+                            <div style="flex:1;font-size:0.88rem;color:var(--text-bright);font-weight:500;padding:0.6rem 1rem;background:rgba(0,242,255,0.05);border:1px solid rgba(0,242,255,0.12);border-radius:10px;display:flex;align-items:center;">认知升级</div>
+                        </div>
+                        <div style="display:flex;align-items:stretch;gap:1rem;">
+                            <div style="flex:0 0 110px;font-size:0.82rem;color:var(--text-dim);padding:0.6rem 0.8rem;background:rgba(0,0,0,0.25);border-radius:10px;display:flex;align-items:center;">用户动机</div>
+                            <div style="flex:1;font-size:0.88rem;color:var(--text-bright);font-weight:500;padding:0.6rem 1rem;background:rgba(0,242,255,0.05);border:1px solid rgba(0,242,255,0.12);border-radius:10px;display:flex;align-items:center;">好奇</div>
+                        </div>
+                        <div style="display:flex;align-items:stretch;gap:1rem;">
+                            <div style="flex:0 0 110px;font-size:0.82rem;color:var(--text-dim);padding:0.6rem 0.8rem;background:rgba(0,0,0,0.25);border-radius:10px;display:flex;align-items:center;">核心认知冲突</div>
+                            <div style="flex:1;font-size:0.88rem;color:var(--text-bright);font-weight:500;padding:0.6rem 1rem;background:rgba(0,242,255,0.05);border:1px solid rgba(0,242,255,0.12);border-radius:10px;display:flex;align-items:center;">先破后立</div>
+                        </div>
+                        <div style="display:flex;align-items:stretch;gap:1rem;">
+                            <div style="flex:0 0 110px;font-size:0.82rem;color:var(--text-dim);padding:0.6rem 0.8rem;background:rgba(0,0,0,0.25);border-radius:10px;display:flex;align-items:center;">主结构</div>
+                            <div style="flex:1;font-size:0.88rem;color:var(--text-bright);font-weight:500;padding:0.6rem 1rem;background:rgba(0,242,255,0.05);border:1px solid rgba(0,242,255,0.12);border-radius:10px;display:flex;align-items:center;">认知升级型</div>
+                        </div>
+                        <div style="display:flex;align-items:stretch;gap:1rem;">
+                            <div style="flex:0 0 110px;font-size:0.82rem;color:var(--text-dim);padding:0.6rem 0.8rem;background:rgba(0,0,0,0.25);border-radius:10px;display:flex;align-items:center;">推进方式</div>
+                            <div style="flex:1;font-size:0.88rem;color:var(--text-bright);font-weight:500;padding:0.6rem 1rem;background:rgba(0,242,255,0.05);border:1px solid rgba(0,242,255,0.12);border-radius:10px;display:flex;align-items:center;">冲突推进</div>
+                        </div>
+                        <div style="display:flex;align-items:stretch;gap:1rem;">
+                            <div style="flex:0 0 110px;font-size:0.82rem;color:var(--text-dim);padding:0.6rem 0.8rem;background:rgba(0,0,0,0.25);border-radius:10px;display:flex;align-items:center;">认知模块流</div>
+                            <div style="flex:1;font-size:0.88rem;color:var(--cyan);font-weight:600;padding:0.6rem 1rem;background:rgba(0,242,255,0.05);border:1px solid rgba(0,242,255,0.12);border-radius:10px;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                                <span style="background:rgba(0,242,255,0.15);padding:0.2rem 0.6rem;border-radius:6px;font-size:0.78rem;">HOOK</span>
+                                <span style="color:var(--text-dim);">→</span>
+                                <span style="background:rgba(0,242,255,0.15);padding:0.2rem 0.6rem;border-radius:6px;font-size:0.78rem;">CASE</span>
+                                <span style="color:var(--text-dim);">→</span>
+                                <span style="background:rgba(0,242,255,0.15);padding:0.2rem 0.6rem;border-radius:6px;font-size:0.78rem;">EXPLAIN</span>
+                                <span style="color:var(--text-dim);">→</span>
+                                <span style="background:rgba(0,242,255,0.15);padding:0.2rem 0.6rem;border-radius:6px;font-size:0.78rem;">MODEL</span>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:stretch;gap:1rem;">
+                            <div style="flex:0 0 110px;font-size:0.82rem;color:var(--text-dim);padding:0.6rem 0.8rem;background:rgba(0,0,0,0.25);border-radius:10px;display:flex;align-items:center;">势能曲线</div>
+                            <div style="flex:1;padding:0.6rem 1rem;background:rgba(0,242,255,0.05);border:1px solid rgba(0,242,255,0.12);border-radius:10px;display:flex;align-items:center;gap:0.4rem;">
+                                <span style="font-size:0.8rem;color:var(--text-dim);">好奇</span>
+                                <span style="color:var(--cyan);">→</span>
+                                <span style="font-size:0.8rem;color:var(--purple);font-weight:600;">震惊</span>
+                                <span style="color:var(--cyan);">→</span>
+                                <span style="font-size:0.8rem;color:var(--text-bright);font-weight:600;">清晰</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:1.2rem;padding:1rem 1.2rem;background:rgba(0,0,0,0.2);border-radius:12px;border:1px solid rgba(255,255,255,0.05);">
+                        <div style="font-size:0.78rem;color:var(--text-dim);line-height:1.8;">
+                            另有：<span style="color:var(--text-bright);">信息密度要求</span> /
+                            <span style="color:var(--text-bright);">Anti-AI要求</span> /
+                            <span style="color:var(--text-bright);">语言风格</span> /
+                            <span style="color:var(--text-bright);">最终动态大纲</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- MODULE 03: 市场锚定 -->
+    <section class="section" id="market">
+        <div class="section-inner">
+            <div class="cat-label reveal">
+                <h2 class="label-purple">03 / 市场锚定</h2>
+                <div class="line"></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6 feat-grid">
+                <div class="feat-card reveal" style="--accent-color: var(--purple);">
+                    <div class="feat-icon" style="color:var(--purple);background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.2);">
+                        <i class="fas fa-anchor"></i>
+                    </div>
+                    <h3 class="feat-title">红蓝海评估 (Reality Anchor)</h3>
+                    <p class="feat-text">
+                        <strong>解决问题：</strong> 避免在高度饱和的红海话题中浪费精力。<br>
+                        <strong>价值：</strong> 全网实时搜索查重，精准计算"新颖度评分"，帮你定位真正的选题蓝海。
+                    </p>
+                    <div style="display:flex;align-items:center;gap:1.2rem;margin-top:1.5rem;">
+                        <div class="score-ring">85%</div>
+                        <div style="font-size:0.88rem;color:var(--text-dim);">
+                            <div style="color:var(--purple);font-weight:600;margin-bottom:0.2rem;">新颖度建议：极高</div>
+                            <div>蓝海赛道，适合切入</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="feat-card reveal" style="--accent-color: var(--purple); animation-delay:0.1s;">
+                    <div class="feat-icon" style="color:var(--purple);background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.2);">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3 class="feat-title">素材缺口分析 (Gap Analyzer)</h3>
+                    <p class="feat-text">
+                        <strong>解决问题：</strong> 解决"想得出写不出"的尴尬。<br>
+                        <strong>价值：</strong> 自动对比你的私有素材库，告诉你还缺哪些案例、哪些数据，并自动生成写作大纲。
+                    </p>
+                    <div style="margin-top:1.5rem;">
+                        <div class="chart-label">
+                            <span class="chart-hint">素材就绪度</span>
+                            <span class="chart-val" style="color:var(--purple);">42%</span>
+                        </div>
+                        <div class="chart-bar"><div class="chart-fill purple" style="width:42%;"></div></div>
+                        <div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.6rem;">建议补充行业数据报告与用户案例</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- MODULE 04: 战略进化 -->
+    <section class="section">
+        <div class="section-inner">
+            <div class="cat-label reveal">
+                <h2 class="label-red">04 / 战略进化</h2>
+                <div class="line"></div>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6 feat-grid">
+                <div class="feat-card reveal" style="--accent-color: var(--red);">
+                    <div class="feat-icon" style="color:var(--red);background:rgba(244,63,94,0.1);border-color:rgba(244,63,94,0.2);font-size:1.2rem;">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <h3 class="feat-title" style="font-size:1.1rem;">逻辑压力测试</h3>
+                    <p class="feat-text" style="font-size:0.95rem;">
+                        审计标题中的逻辑谬误（循环论证、幸存者偏差等），确保你的内容经得起推敲。
+                    </p>
+                </div>
+                <div class="feat-card reveal" style="--accent-color: var(--red); animation-delay:0.1s;">
+                    <div class="feat-icon" style="color:var(--red);background:rgba(244,63,94,0.1);border-color:rgba(244,63,94,0.2);font-size:1.2rem;">
+                        <i class="fas fa-skull-crossbones"></i>
+                    </div>
+                    <h3 class="feat-title" style="font-size:1.1rem;">刺客机制 (Assassin)</h3>
+                    <p class="feat-text" style="font-size:0.95rem;">
+                        系统定期"否定"你过去的爆款观点，强制你进行认知迭代，避免思维僵化。
+                    </p>
+                </div>
+                <div class="feat-card reveal" style="--accent-color: var(--red); animation-delay:0.2s;">
+                    <div class="feat-icon" style="color:var(--red);background:rgba(244,63,94,0.1);border-color:rgba(244,63,94,0.2);font-size:1.2rem;">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <h3 class="feat-title" style="font-size:1.1rem;">认知旅程规划</h3>
+                    <p class="feat-text" style="font-size:0.95rem;">
+                        计算选题间的语义距离，确保你的创作深度呈线性递进，而非原地打转。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- OUTPUT EXAMPLES: 真实输出展示 -->
+    <section class="section" id="outputs" style="padding:7rem 3rem;background:rgba(0,242,255,0.02);">
+        <div class="section-inner">
+            <div class="cat-label reveal">
+                <h2 class="label-cyan" style="color:var(--cyan);">输出示例</h2>
+                <div class="line"></div>
+            </div>
+            <p class="reveal" style="color:var(--text-dim);font-size:1rem;font-weight:300;margin-bottom:3.5rem;max-width:640px;line-height:1.8;">
+                以下是系统处理命题<span style="color:var(--text-bright);font-weight:600;">「AI让内容创作更容易」</span>时的真实输出。点击各模块可查看完整结构。
+            </p>
+
+            <!-- Tab navigation -->
+            <div class="reveal" style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:2.5rem;">
+                <button class="tab-btn active" data-tab="tab-ccos" style="background:rgba(0,242,255,0.12);border:1px solid rgba(0,242,255,0.3);color:var(--cyan);padding:0.6rem 1.4rem;border-radius:100px;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all 0.2s;">CCOS 认知大纲</button>
+                <button class="tab-btn" data-tab="tab-prism" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);color:var(--purple);padding:0.6rem 1.4rem;border-radius:100px;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all 0.2s;">棱镜标题</button>
+                <button class="tab-btn" data-tab="tab-gap" style="background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.2);color:var(--red);padding:0.6rem 1.4rem;border-radius:100px;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all 0.2s;">素材缺口</button>
+                <button class="tab-btn" data-tab="tab-crack" style="background:rgba(0,242,255,0.08);border:1px solid rgba(0,242,255,0.15);color:var(--cyan);padding:0.6rem 1.4rem;border-radius:100px;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all 0.2s;">认知裂缝</button>
+            </p>
+
+            <!-- TAB: CCOS 认知大纲 -->
+            <div class="tab-panel" id="tab-ccos" style="display:block;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;">
+                    <!-- 公众号 -->
+                    <div style="background:var(--bg-card);border:1px solid rgba(0,242,255,0.15);border-radius:20px;overflow:hidden;">
+                        <div style="padding:1.2rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:0.7rem;">
+                            <span style="width:8px;height:8px;border-radius:50%;background:var(--cyan);flex-shrink:0;"></span>
+                            <span style="font-weight:700;font-size:0.95rem;color:var(--text-bright);">公众号</span>
+                            <span style="font-size:0.78rem;color:var(--text-dim);margin-left:auto;">认知升级型</span>
+                        </div>
+                        <div style="padding:1.5rem;display:flex;flex-direction:column;gap:0.8rem;">
+                            <div style="display:flex;gap:0.8rem;align-items:flex-start;">
+                                <span style="font-size:0.72rem;color:var(--text-dim);min-width:72px;padding-top:0.2rem;">内容目标</span>
+                                <span style="font-size:0.88rem;color:var(--text-bright);font-weight:500;">认知升级</span>
+                            </div>
+                            <div style="display:flex;gap:0.8rem;align-items:flex-start;">
+                                <span style="font-size:0.72rem;color:var(--text-dim);min-width:72px;padding-top:0.2rem;">推进方式</span>
+                                <span style="font-size:0.88rem;color:var(--red);font-weight:600;">冲突推进</span>
+                            </div>
+                            <div style="display:flex;gap:0.8rem;align-items:flex-start;">
+                                <span style="font-size:0.72rem;color:var(--text-dim);min-width:72px;padding-top:0.2rem;">模块流</span>
+                                <div style="display:flex;align-items:center;gap:0.3rem;flex-wrap:wrap;">
+                                    <span style="background:rgba(0,242,255,0.12);color:var(--cyan);font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:6px;font-weight:600;">HOOK</span>
+                                    <span style="color:var(--text-dim);">→</span>
+                                    <span style="background:rgba(0,242,255,0.12);color:var(--cyan);font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:6px;font-weight:600;">CASE</span>
+                                    <span style="color:var(--text-dim);">→</span>
+                                    <span style="background:rgba(0,242,255,0.12);color:var(--cyan);font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:6px;font-weight:600;">EXPLAIN</span>
+                                    <span style="color:var(--text-dim);">→</span>
+                                    <span style="background:rgba(0,242,255,0.12);color:var(--cyan);font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:6px;font-weight:600;">MODEL</span>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:0.8rem;align-items:flex-start;">
+                                <span style="font-size:0.72rem;color:var(--text-dim);min-width:72px;padding-top:0.2rem;">势能曲线</span>
+                                <div style="display:flex;align-items:center;gap:0.4rem;">
+                                    <span style="font-size:0.8rem;color:var(--text-dim);">好奇</span>
+                                    <span style="color:var(--cyan);">→</span>
+                                    <span style="font-size:0.8rem;color:var(--purple);font-weight:600;">震惊</span>
+                                    <span style="color:var(--cyan);">→</span>
+                                    <span style="font-size:0.8rem;color:var(--text-bright);font-weight:600;">清晰</span>
+                                </div>
+                            </div>
+                            <div style="margin-top:0.3rem;padding:1rem;background:rgba(0,0,0,0.2);border-radius:10px;border:1px solid rgba(255,255,255,0.04);">
+                                <div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:0.5rem;">Anti-AI 要求</div>
+                                <div style="font-size:0.82rem;color:var(--text-bright);line-height:1.7;">禁止模板感 / 套话 / 平均化表达 / AI式升华</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 小红书 -->
+                    <div style="background:var(--bg-card);border:1px solid rgba(244,63,94,0.2);border-radius:20px;overflow:hidden;">
+                        <div style="padding:1.2rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:0.7rem;">
+                            <span style="width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;"></span>
+                            <span style="font-weight:700;font-size:0.95rem;color:var(--text-bright);">小红书</span>
+                            <span style="font-size:0.78rem;color:var(--text-dim);margin-left:auto;">故事驱动型</span>
+                        </div>
+                        <div style="padding:1.5rem;display:flex;flex-direction:column;gap:0.8rem;">
+                            <div style="display:flex;gap:0.8rem;align-items:flex-start;">
+                                <span style="font-size:0.72rem;color:var(--text-dim);min-width:72px;padding-top:0.2rem;">内容目标</span>
+                                <span style="font-size:0.88rem;color:var(--text-bright);font-weight:500;">情绪共鸣</span>
+                            </div>
+                            <div style="display:flex;gap:0.8rem;align-items:flex-start;">
+                                <span style="font-size:0.72rem;color:var(--text-dim);min-width:72px;padding-top:0.2rem;">推进方式</span>
+                                <span style="font-size:0.88rem;color:var(--red);font-weight:600;">情绪推进</span>
+                            </div>
+                            <div style="display:flex;gap:0.8rem;align-items:flex-start;">
+                                <span style="font-size:0.72rem;color:var(--text-dim);min-width:72px;padding-top:0.2rem;">模块流</span>
+                                <div style="display:flex;align-items:center;gap:0.3rem;flex-wrap:wrap;">
+                                    <span style="background:rgba(244,63,94,0.12);color:var(--red);font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:6px;font-weight:600;">HOOK</span>
+                                    <span style="color:var(--text-dim);">→</span>
+                                    <span style="background:rgba(244,63,94,0.12);color:var(--red);font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:6px;font-weight:600;">CASE</span>
+                                    <span style="color:var(--text-dim);">→</span>
+                                    <span style="background:rgba(244,63,94,0.12);color:var(--red);font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:6px;font-weight:600;">ACTION</span>
+                                    <span style="color:var(--text-dim);">→</span>
+                                    <span style="background:rgba(244,63,94,0.12);color:var(--red);font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:6px;font-weight:600;">BOUNDARY</span>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:0.8rem;align-items:flex-start;">
+                                <span style="font-size:0.72rem;color:var(--text-dim);min-width:72px;padding-top:0.2rem;">势能曲线</span>
+                                <div style="display:flex;align-items:center;gap:0.4rem;">
+                                    <span style="font-size:0.8rem;color:var(--text-dim);">焦虑</span>
+                                    <span style="color:var(--red);">→</span>
+                                    <span style="font-size:0.8rem;color:var(--purple);font-weight:600;">共鸣</span>
+                                    <span style="color:var(--red);">→</span>
+                                    <span style="font-size:0.8rem;color:var(--text-bright);font-weight:600;">清晰</span>
+                                    <span style="color:var(--red);">→</span>
+                                    <span style="font-size:0.8rem;color:var(--cyan);font-weight:600;">行动</span>
+                                </div>
+                            </div>
+                            <div style="margin-top:0.3rem;padding:1rem;background:rgba(0,0,0,0.2);border-radius:10px;border:1px solid rgba(255,255,255,0.04);">
+                                <div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:0.5rem;">Anti-AI 要求</div>
+                                <div style="font-size:0.82rem;color:var(--text-bright);line-height:1.7;">禁止平均化表达，强制可操作</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: 棱镜标题 -->
+            <div class="tab-panel" id="tab-prism" style="display:none;">
+                <div style="display:flex;flex-direction:column;gap:1rem;">
+                    <div style="background:var(--bg-card);border:1px solid rgba(139,92,246,0.2);border-radius:16px;padding:1.3rem 1.5rem;display:flex;align-items:center;gap:1rem;">
+                        <div style="width:36px;height:36px;border-radius:10px;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <span style="color:var(--purple);font-size:0.85rem;font-weight:800;">①</span>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-size:1rem;color:var(--text-bright);font-weight:600;margin-bottom:0.3rem;">为什么"努力就能成功"是当今社会最大陷阱？</div>
+                            <div style="font-size:0.78rem;color:var(--text-dim);">逆向拆解 · 蓝海赛道 · 新颖度 <span style="color:var(--cyan);font-weight:700;">82%</span></div>
+                        </div>
+                        <div style="width:48px;height:48px;border-radius:50%;border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <span style="font-size:0.78rem;font-weight:700;color:var(--cyan);">82</span>
+                        </div>
+                    </div>
+                    <div style="background:var(--bg-card);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:1.3rem 1.5rem;display:flex;align-items:center;gap:1rem;">
+                        <div style="width:36px;height:36px;border-radius:10px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <span style="color:var(--purple);font-size:0.85rem;font-weight:800;">②</span>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-size:1rem;color:var(--text-bright);font-weight:600;margin-bottom:0.3rem;">某大厂裁员现场：一个程序员的中年危机</div>
+                            <div style="font-size:0.78rem;color:var(--text-dim);">微观切片 · 蓝海赛道 · 新颖度 <span style="color:var(--cyan);font-weight:700;">79%</span></div>
+                        </div>
+                        <div style="width:48px;height:48px;border-radius:50%;border:2px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <span style="font-size:0.78rem;font-weight:700;color:var(--text-dim);">79</span>
+                        </div>
+                    </div>
+                    <div style="background:var(--bg-card);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:1.3rem 1.5rem;display:flex;align-items:center;gap:1rem;">
+                        <div style="width:36px;height:36px;border-radius:10px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <span style="color:var(--purple);font-size:0.85rem;font-weight:800;">③</span>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-size:1rem;color:var(--text-bright);font-weight:600;margin-bottom:0.3rem;">程序员失业潮的根源：不是AI，是商业模式缺陷</div>
+                            <div style="font-size:0.78rem;color:var(--text-dim);">系统归因 · 黄海赛道 · 新颖度 <span style="color:var(--text-dim);font-weight:700;">68%</span></div>
+                        </div>
+                        <div style="width:48px;height:48px;border-radius:50%;border:2px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <span style="font-size:0.78rem;font-weight:700;color:var(--text-dim);">68</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: 素材缺口 -->
+            <div class="tab-panel" id="tab-gap" style="display:none;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;">
+                    <!-- 就绪度 -->
+                    <div style="background:var(--bg-card);border:1px solid rgba(244,63,94,0.2);border-radius:20px;padding:2rem;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+                            <div style="font-weight:700;font-size:1rem;color:var(--text-bright);">素材就绪度</div>
+                            <div style="font-size:2rem;font-weight:800;color:var(--red);">45%</div>
+                        </div>
+                        <div style="height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;margin-bottom:1.2rem;">
+                            <div style="height:100%;width:45%;background:var(--red);border-radius:3px;"></div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+                            <div style="font-size:0.82rem;color:var(--text-dim);">当前缺口</div>
+                            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+                                <span style="background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.2);color:var(--red);font-size:0.78rem;padding:0.3rem 0.8rem;border-radius:100px;">具体数据支撑</span>
+                                <span style="background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.2);color:var(--red);font-size:0.78rem;padding:0.3rem 0.8rem;border-radius:100px;">成功案例细节</span>
+                            </div>
+                            <div style="margin-top:0.5rem;font-size:0.82rem;color:var(--text-dim);">建议补充</div>
+                            <div style="font-size:0.88rem;color:var(--text-bright);line-height:1.7;">具体数据报告 + 一个有深度的真实案例</div>
+                        </div>
+                    </div>
+                    <!-- 认知模块流 -->
+                    <div style="background:var(--bg-card);border:1px solid rgba(0,242,255,0.15);border-radius:20px;padding:2rem;">
+                        <div style="font-weight:700;font-size:1rem;color:var(--text-bright);margin-bottom:1.5rem;">认知模块流</div>
+                        <div style="display:flex;flex-direction:column;gap:0.8rem;">
+                            <div style="display:flex;gap:1rem;align-items:flex-start;">
+                                <span style="background:rgba(0,242,255,0.12);color:var(--cyan);font-size:0.72rem;padding:0.3rem 0.7rem;border-radius:6px;font-weight:700;flex-shrink:0;margin-top:0.1rem;">HOOK</span>
+                                <div><div style="font-size:0.88rem;color:var(--text-bright);font-weight:500;">开场钩子</div><div style="font-size:0.78rem;color:var(--text-dim);">制造停留</div></div>
+                            </div>
+                            <div style="display:flex;gap:1rem;align-items:flex-start;">
+                                <span style="background:rgba(0,242,255,0.12);color:var(--cyan);font-size:0.72rem;padding:0.3rem 0.7rem;border-radius:6px;font-weight:700;flex-shrink:0;margin-top:0.1rem;">CASE</span>
+                                <div><div style="font-size:0.88rem;color:var(--text-bright);font-weight:500;">一个创业者的真实故事</div><div style="font-size:0.78rem;color:var(--text-dim);">建立代入感</div></div>
+                            </div>
+                            <div style="display:flex;gap:1rem;align-items:flex-start;">
+                                <span style="background:rgba(0,242,255,0.12);color:var(--cyan);font-size:0.72rem;padding:0.3rem 0.7rem;border-radius:6px;font-weight:700;flex-shrink:0;margin-top:0.1rem;">EXPLAIN</span>
+                                <div><div style="font-size:0.88rem;color:var(--text-bright);font-weight:500;">为什么会出现这种情况</div><div style="font-size:0.78rem;color:var(--text-dim);">建立理解</div></div>
+                            </div>
+                            <div style="display:flex;gap:1rem;align-items:flex-start;">
+                                <span style="background:rgba(0,242,255,0.12);color:var(--cyan);font-size:0.72rem;padding:0.3rem 0.7rem;border-radius:6px;font-weight:700;flex-shrink:0;margin-top:0.1rem;">MODEL</span>
+                                <div><div style="font-size:0.88rem;color:var(--text-bright);font-weight:500;">认知升级模型</div><div style="font-size:0.78rem;color:var(--text-dim);">提升认知密度</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: 认知裂缝 -->
+            <div class="tab-panel" id="tab-crack" style="display:none;">
+                <div style="background:linear-gradient(135deg,rgba(244,63,94,0.08),rgba(139,92,246,0.08));border:1px solid rgba(244,63,94,0.25);border-radius:20px;padding:2rem 2.5rem;">
+                    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;">
+                        <div style="width:48px;height:48px;border-radius:14px;background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.2);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-bolt" style="color:var(--red);font-size:1.1rem;"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:800;font-size:1.05rem;color:var(--text-bright);">认知裂缝已发现</div>
+                            <div style="font-size:0.82rem;color:var(--text-dim);">数据裂缝 · 置信度 <span style="color:var(--red);font-weight:700;">85%</span></div>
+                        </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:auto 1fr;gap:1rem;margin-bottom:1.5rem;align-items:center;">
+                        <div style="padding:0.8rem 1.2rem;background:rgba(0,0,0,0.25);border-radius:12px;text-align:center;min-width:80px;">
+                            <div style="font-size:0.7rem;color:var(--text-dim);margin-bottom:0.3rem;">共识</div>
+                            <div style="font-size:0.9rem;color:var(--text-bright);font-weight:600;line-height:1.4;">AI会创造<br>更多就业</div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                            <div style="display:flex;align-items:center;gap:0.5rem;">
+                                <div style="width:20px;height:20px;border-radius:50%;background:rgba(244,63,94,0.2);border:1px solid rgba(244,63,94,0.3);display:flex;align-items:center;justify-content:center;">
+                                    <i class="fas fa-arrow-right" style="color:var(--red);font-size:0.6rem;"></i>
+                                </div>
+                                <div style="height:2px;flex:1;background:linear-gradient(90deg,rgba(244,63,94,0.4),rgba(244,63,94,0.1));border-radius:1px;"></div>
+                            </div>
+                        </div>
+                        <div style="padding:0.8rem 1.2rem;background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.2);border-radius:12px;text-align:center;min-width:80px;">
+                            <div style="font-size:0.7rem;color:var(--text-dim);margin-bottom:0.3rem;">现实</div>
+                            <div style="font-size:0.9rem;color:var(--red);font-weight:700;line-height:1.4;">AI导致失业<br>上升30%</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+                        <span style="background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.15);color:var(--red);font-size:0.75rem;padding:0.3rem 0.8rem;border-radius:100px;">数据裂缝</span>
+                        <span style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.15);color:var(--purple);font-size:0.75rem;padding:0.3rem 0.8rem;border-radius:100px;">置信度 85%</span>
+                        <span style="background:rgba(0,242,255,0.06);border:1px solid rgba(0,242,255,0.12);color:var(--cyan);font-size:0.75rem;padding:0.3rem 0.8rem;border-radius:100px;">已写入素材库</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- PROCESS & COMPARE -->
+    <section class="section" style="background:rgba(255,255,255,0.015);padding:7rem 3rem;">
+        <div class="section-inner">
+            <h2 class="reveal" style="font-family:'Sora',sans-serif;font-size:1.8rem;font-weight:800;color:var(--text-bright);text-align:center;margin-bottom:4rem;">
+                为什么 PRISM-OS 是不可替代的？
+            </h2>
+            <div class="process-grid">
+                <!-- Flow -->
+                <div class="reveal">
+                    <div class="flow-step">
+                        <div style="display:flex;flex-direction:column;align-items:center;">
+                            <div class="flow-dot"></div>
+                            <div class="flow-connector"></div>
+                        </div>
+                        <div>
+                            <div class="flow-step-title">输入灵感</div>
+                            <div class="flow-step-desc">丢入一个模糊的想法或观察到的现象</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div style="display:flex;flex-direction:column;align-items:center;">
+                            <div class="flow-dot" style="animation-delay:0.5s;"></div>
+                            <div class="flow-connector"></div>
+                        </div>
+                        <div>
+                            <div class="flow-step-title">认知对齐 → 熵值审计</div>
+                            <div class="flow-step-desc">Layer 0 七类追问 → 熵值计算（规则版，0次 LLM）</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div style="display:flex;flex-direction:column;align-items:center;">
+                            <div class="flow-dot" style="animation-delay:1s;"></div>
+                            <div class="flow-connector"></div>
+                        </div>
+                        <div>
+                            <div class="flow-step-title">CCOS 动态大纲</div>
+                            <div class="flow-step-desc">四维拆解 → 认知模块流 → 14项输出（Layer 2 并行，12次 LLM）</div>
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div style="display:flex;flex-direction:column;align-items:center;">
+                            <div class="flow-dot" style="animation-delay:1.5s;"></div>
+                        </div>
+                        <div>
+                            <div class="flow-step-title">获得手术刀</div>
+                            <div class="flow-step-desc">拿到 4 个正交标题、缺口报告及写作大纲</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="glass-table reveal" style="animation-delay:0.15s;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>维度</th>
+                                <th>普通 AI 工具</th>
+                                <th>PRISM-OS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>LLM 调用优化</td>
+                                <td>双平台 18次，单平台 9次</td>
+                                <td style="color:var(--cyan);">双平台 12次，单平台 6次（Phase 4.7）</td>
+                            </tr>
+                            <tr>
+                                <td>熵值计算</td>
+                                <td>每次调用 LLM</td>
+                                <td style="color:var(--cyan);">纯公式，0次 LLM（Phase 4.7）</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- CASES -->
+    <section class="section" id="cases">
+        <div class="section-inner">
+            <h2 class="reveal" style="font-family:'Sora',sans-serif;font-size:1.8rem;font-weight:800;color:var(--text-bright);text-align:center;margin-bottom:4rem;">
+                案例演示：从平庸到卓越
+            </h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="case-card reveal">
+                    <div class="case-tag">案例 A：职场 / AI</div>
+                    <div class="case-before">
+                        <div class="case-before-label">原始命题</div>
+                        <div class="case-before-text">我想写写 AI 导致大家失业，大家都很焦虑。</div>
+                    </div>
+                    <div class="case-arrow">↓</div>
+                    <div class="case-after">
+                        <div class="case-after-label">PRISM 进化</div>
+                        <div class="case-after-text">为什么 AI 时代最大的不公平，是它把"会提问"的人变成超人，把"会执行"的人变成垃圾？</div>
+                    </div>
+                </div>
+                <div class="case-card reveal" style="animation-delay:0.1s;">
+                    <div class="case-tag">案例 B：商业 / 认知</div>
+                    <div class="case-before">
+                        <div class="case-before-label">原始命题</div>
+                        <div class="case-before-text">我想写写为什么现在生意难做，大家都赚不到钱。</div>
+                    </div>
+                    <div class="case-arrow">↓</div>
+                    <div class="case-after">
+                        <div class="case-after-label">PRISM 进化</div>
+                        <div class="case-after-text">为什么"努力赚钱"正在成为一种低效率的勤奋？揭秘商业系统中的"认知陷阱"。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <footer class="cta-footer">
+        <div class="cta-inner">
+            <h2 class="cta-title">在这个 AI 泛滥的时代，<br>你需要一套属于自己的认知主权。</h2>
+            <p class="cta-desc">
+                PRISM-OS 不仅仅是一个工具，它是你大脑的延伸。它帮你从繁杂的信息中抽离，专注于那些真正有价值的命题。
+            </p>
+            <div class="cta-box">
+                <div class="cta-hint">立即在 YouMind 技能市场搜索：</div>
+                <div class="cta-kw">PRISM-OS</div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="footer-bar">
+        <p class="footer-text">PRISM-OS // 认知进化全周期手册 // 2026</p>
+    </div>
+
+    <script>
+        const observer = new IntersectionObserver(
+            entries => entries.forEach(e => e.isIntersecting && e.target.classList.add('visible')),
+            { threshold: 0.1 }
+        );
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.dataset.tab;
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.style.background = 'rgba(255,255,255,0.04)';
+                    b.style.borderColor = 'rgba(255,255,255,0.08)';
+                    b.style.color = 'var(--text-dim)';
+                });
+                btn.classList.add('active');
+                btn.style.background = btn.dataset.tab === 'tab-ccos' ? 'rgba(0,242,255,0.12)' :
+                                     btn.dataset.tab === 'tab-prism' ? 'rgba(139,92,246,0.08)' :
+                                     btn.dataset.tab === 'tab-gap' ? 'rgba(244,63,94,0.08)' :
+                                     'rgba(0,242,255,0.08)';
+                btn.style.borderColor = btn.dataset.tab === 'tab-ccos' ? 'rgba(0,242,255,0.3)' :
+                                         btn.dataset.tab === 'tab-prism' ? 'rgba(139,92,246,0.2)' :
+                                         btn.dataset.tab === 'tab-gap' ? 'rgba(244,63,94,0.2)' :
+                                         'rgba(0,242,255,0.15)';
+                btn.style.color = btn.dataset.tab === 'tab-ccos' ? 'var(--cyan)' :
+                                  btn.dataset.tab === 'tab-prism' ? 'var(--purple)' :
+                                  btn.dataset.tab === 'tab-gap' ? 'var(--red)' :
+                                  'var(--cyan)';
+                document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+                document.getElementById(target).style.display = 'block';
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+# RSS-Hunter 信源配置
+# 从 info_sources.yaml 迁移，扩展 category/tags 字段
+
+monitored_sources:
+  # ============ 国内源 ============
+  - name: "知乎热榜"
+    url: "https://rsshub.app/zhihu/hot"
+    category: "social"
+    tags: ["热点", "中文"]
+    region: "cn"
+    check_interval: "1h"
+    priority: "high"
+
+  - name: "微博热搜"
+    url: "https://rsshub.app/weibo/hot/search"
+    category: "social"
+    tags: ["热点", "中文"]
+    region: "cn"
+    check_interval: "30min"
+    priority: "high"
+
+  - name: "36氪"
+    url: "https://rsshub.app/36kr/feed"
+    category: "ai"
+    tags: ["AI", "科技", "中文"]
+    region: "cn"
+    check_interval: "2h"
+    priority: "medium"
+
+  - name: "虎嗅"
+    url: "https://rsshub.app/huxiu/rss"
+    category: "business"
+    tags: ["商业", "科技", "中文"]
+    region: "cn"
+    check_interval: "2h"
+    priority: "medium"
+
+  - name: "钛媒体"
+    url: "https://rsshub.app/tmtpost/rss"
+    category: "business"
+    tags: ["商业", "科技", "中文"]
+    region: "cn"
+    check_interval: "2h"
+    priority: "medium"
+
+  - name: "少数派"
+    url: "https://rsshub.app/sspai/rss"
+    category: "tech"
+    tags: ["效率", "工具", "中文"]
+    region: "cn"
+    check_interval: "2h"
+    priority: "low"
+
+  - name: "IT之家"
+    url: "https://rsshub.app/ithome/rss"
+    category: "tech"
+    tags: ["科技", "中文"]
+    region: "cn"
+    check_interval: "1h"
+    priority: "low"
+
+  - name: "澎湃新闻"
+    url: "https://rsshub.app/thepaper/rss"
+    category: "news"
+    tags: ["新闻", "中文"]
+    region: "cn"
+    check_interval: "1h"
+    priority: "medium"
+
+  # ============ 国际源 ============
+  - name: "Hacker News"
+    url: "https://rsshub.app/hacker-news/best"
+    category: "ai"
+    tags: ["AI", "科技", "英文"]
+    region: "intl"
+    check_interval: "1h"
+    priority: "high"
+
+  - name: "TechCrunch"
+    url: "https://rsshub.app/techcrunch/rss"
+    category: "ai"
+    tags: ["AI", "创业", "英文"]
+    region: "intl"
+    check_interval: "2h"
+    priority: "high"
+
+  - name: "MIT Tech Review"
+    url: "https://rsshub.app/technologyreview/rss"
+    category: "ai"
+    tags: ["AI", "研究", "英文"]
+    region: "intl"
+    check_interval: "2h"
+    priority: "medium"
+
+  - name: "VentureBeat AI"
+    url: "https://rsshub.app/venturebeat/ai"
+    category: "ai"
+    tags: ["AI", "企业", "英文"]
+    region: "intl"
+    check_interval: "2h"
+    priority: "medium"
+
+  - name: "Wired"
+    url: "https://rsshub.app/wired/rss"
+    category: "tech"
+    tags: ["科技", "文化", "英文"]
+    region: "intl"
+    check_interval: "2h"
+    priority: "low"
+
+  - name: "Ars Technica"
+    url: "https://rsshub.app/ars/rss"
+    category: "tech"
+    tags: ["科技", "深度", "英文"]
+    region: "intl"
+    check_interval: "2h"
+    priority: "low"
+
+  - name: "Reddit r/technology"
+    url: "https://rsshub.app/reddit/r/technology"
+    category: "tech"
+    tags: ["科技", "社区", "英文"]
+    region: "intl"
+    check_interval: "1h"
+    priority: "medium"

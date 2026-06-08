@@ -1,0 +1,95 @@
+# PRISM-OS 信息源监控配置
+# 认知裂缝捕捉的信息源列表
+
+monitored_sources:
+  # ============ 国内源 ============
+  - name: "知乎热榜"
+    url: "https://rsshub.app/zhihu/hot"
+    check_interval: "1h"
+    priority: "high"
+    region: "cn"
+
+  - name: "微博热搜"
+    url: "https://rsshub.app/weibo/hot/search"
+    check_interval: "30min"
+    priority: "high"
+    region: "cn"
+
+  - name: "36氪"
+    url: "https://rsshub.app/36kr/feed"
+    check_interval: "2h"
+    priority: "medium"
+    region: "cn"
+
+  - name: "虎嗅"
+    url: "https://rsshub.app/huxiu/rss"
+    check_interval: "2h"
+    priority: "medium"
+    region: "cn"
+
+  - name: "钛媒体"
+    url: "https://rsshub.app/tmtpost/rss"
+    check_interval: "2h"
+    priority: "medium"
+    region: "cn"
+
+  - name: "少数派"
+    url: "https://rsshub.app/sspai/rss"
+    check_interval: "2h"
+    priority: "low"
+    region: "cn"
+
+  - name: "IT之家"
+    url: "https://rsshub.app/ithome/rss"
+    check_interval: "1h"
+    priority: "low"
+    region: "cn"
+
+  - name: "澎湃新闻"
+    url: "https://rsshub.app/thepaper/rss"
+    check_interval: "1h"
+    priority: "medium"
+    region: "cn"
+
+  # ============ 国际源 ============
+  - name: "Hacker News"
+    url: "https://rsshub.app/hacker-news/best"
+    check_interval: "1h"
+    priority: "high"
+    region: "intl"
+
+  - name: "TechCrunch"
+    url: "https://rsshub.app/techcrunch/rss"
+    check_interval: "2h"
+    priority: "high"
+    region: "intl"
+
+  - name: "MIT Tech Review"
+    url: "https://rsshub.app/technologyreview/rss"
+    check_interval: "2h"
+    priority: "medium"
+    region: "intl"
+
+  - name: "VentureBeat AI"
+    url: "https://rsshub.app/venturebeat/ai"
+    check_interval: "2h"
+    priority: "medium"
+    region: "intl"
+
+  - name: "Wired"
+    url: "https://rsshub.app/wired/rss"
+    check_interval: "2h"
+    priority: "low"
+    region: "intl"
+
+  - name: "Ars Technica"
+    url: "https://rsshub.app/ars/rss"
+    check_interval: "2h"
+    priority: "low"
+    region: "intl"
+
+  - name: "Reddit r/technology"
+    url: "https://rsshub.app/reddit/r/technology"
+    check_interval: "1h"
+    priority: "medium"
+    region: "intl"

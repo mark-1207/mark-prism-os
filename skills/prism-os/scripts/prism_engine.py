@@ -384,45 +384,42 @@ def generate_archetype_titles(thesis: str, archetype: str,
     return valid_candidates[:count]
 
 
-def generate_all_titles(thesis: str, identity_role: str = "", audience: str = "") -> List[Dict]:
+def generate_all_titles(thesis: str, identity_role: str = "", audience: str = "", flavor: str = "prd") -> List[Dict]:
     """
-    基于原型选择，生成 6-10 个候选标题
+    遍历 4 维，每维生成 3 个候选标题 = 总计 12 个
 
     流程：
-    1. 先用LLM评估4个认知维度的得分（保留4维度作为分析信号）
-    2. 根据维度得分推荐2-4个标题原型
-    3. 每个原型生成2-3个标题
-    4. 总计6-10个标题，不凑数
+    1. 遍历 4 维（reversal / benefit_anchor / micro_scene / contrarian）
+    2. 每维调 generate_dimension_titles(thesis, dim, count=3)
+    3. 失败/不足时补生成（同一维重试一次）
+    4. 总计 12 个选题
 
     Args:
         thesis: 命题
         identity_role: 用户身份
         audience: 目标受众
+        flavor: "prd"（默认）或 "legacy"（旧 4 维）
 
     Returns:
         所有候选标题列表
     """
-    # Step 1: 获取维度得分（从CCOS或LLM那里来，这里先用prism_engine自己的评估）
-    # 简单规则：基于命题文本特征估算4维得分
-    dimension_scores = _estimate_dimension_scores(thesis)
+    # 选择 4 维
+    if flavor == "legacy":
+        dimensions = list(LEGACY_DIMENSIONS.keys())
+    else:
+        dimensions = list(DIMENSIONS.keys())
 
-    # Step 2: 选择原型
-    selected_archetypes = select_title_archetypes(dimension_scores)
-
-    # Step 3: 按原型生成标题
+    # 遍历 4 维，每维 3 选题
     all_candidates = []
-    for i, arch in enumerate(selected_archetypes):
-        # 前面原型给3个，后面给2个
-        count = 3 if i == 0 else (3 if i == 1 and len(selected_archetypes) <= 3 else 2)
-        candidates = generate_archetype_titles(thesis, arch, identity_role, audience, count)
-        all_candidates.extend(candidates)
+    for dim in dimensions:
+        dim_titles = generate_dimension_titles(thesis, dim, identity_role, audience)
+        # 不足 3 时补一次
+        if len(dim_titles) < 3:
+            retry = generate_dimension_titles(thesis, dim, identity_role, audience)
+            dim_titles.extend(retry)
+        all_candidates.extend(dim_titles[:3])
 
-    # 目标6-10个，不凑数
-    if len(all_candidates) < 6:
-        # 补到6个
-        return all_candidates  # 不凑数，有多少是多少
-
-    return all_candidates[:10]  # 上限10个
+    return all_candidates
 
 
 def calculate_jaccard_similarity(title_a: str, title_b: str) -> float:

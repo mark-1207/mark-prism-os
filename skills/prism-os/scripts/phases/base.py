@@ -111,6 +111,8 @@ class PipelineState:
             "status": self.status,
             "user_input": self.thesis,
         }
+        if self.ccos_failed:
+            d["ccos_failed"] = True
         if self.intent:
             d["intent"] = self.intent
         if self.gateway:

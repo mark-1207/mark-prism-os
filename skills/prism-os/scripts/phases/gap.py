@@ -25,6 +25,16 @@ class GapPhase(Phase):
         except Exception as e:
             return PhaseResult(status="success", data={"gap_analysis": None}, message=str(e))
 
+        # Gap < threshold 硬中断
+        threshold = config.gap_auto_reject_threshold
+        readiness = gap_result.get("readiness", 0)
+        if readiness < threshold and config.interactive:
+            return PhaseResult(
+                status="rejected",
+                data={"gap_analysis": gap_result, "gap_decision": "auto_reject"},
+                message=f"就绪度 {readiness:.0%} < {threshold:.0%}，需补素材",
+            )
+
         # 决策点 3
         if config.interactive:
             prompt = self._format_gap_prompt(gap_result)

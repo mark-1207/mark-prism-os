@@ -41,23 +41,17 @@ def test_generate_all_titles_produces_12():
 
 def test_generate_all_titles_groups_by_dimension():
     """generate_all_titles 应按 4 维分组"""
+    import json
     from prism_engine import generate_all_titles
 
     with patch("prism_engine._call_llm_raw") as mock_llm:
-        call_count = [0]
-        dim_names = ["reversal", "benefit_anchor", "micro_scene", "contrarian"]
-
-        def fake_llm(*args, **kwargs):
-            dim_idx = call_count[0]
-            call_count[0] += 1
-            dim_name = dim_names[dim_idx % 4]
-            titles = ",".join([
-                '{"title": "AI自媒体帮助普通人摆脱失业困境' + dim_name + '第' + str(j) + '篇全解析", "rationale": "理由", "dimension": "' + dim_name + '"}'
-                for j in range(3)
-            ])
-            return f'{{"candidates": [{titles}]}}'
-
-        mock_llm.side_effect = fake_llm
+        # 标题必须 18-28 字才能通过校验
+        base = "AI时代自媒体帮助普通人摆脱失业困境"
+        candidate_objs = [
+            {"title": f"{base}深度解析文章第{j}篇", "rationale": "理由"}
+            for j in range(3)
+        ]
+        mock_llm.return_value = json.dumps({"candidates": candidate_objs}, ensure_ascii=False)
         result = generate_all_titles("测试命题")
 
         dims = {}

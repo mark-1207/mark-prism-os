@@ -162,7 +162,7 @@ class TestSelectTitleArchetypes(unittest.TestCase):
     """select_title_archetypes 维度得分 → 原型推荐测试"""
 
     def test_returns_list_of_strings(self):
-        scores = {"reversal": 0.8, "micro_scene": 0.3, "systemic_flaw": 0.2, "bridge": 0.4}
+        scores = {"reversal": 0.8, "benefit_anchor": 0.3, "micro_scene": 0.4, "contrarian": 0.2}
         result = select_title_archetypes(scores)
         self.assertIsInstance(result, list)
         self.assertTrue(len(result) > 0)
@@ -172,27 +172,27 @@ class TestSelectTitleArchetypes(unittest.TestCase):
                           f"返回值 '{item}' 不在 TITLE_ARCHETYPES 中")
 
     def test_reversal_high_recommends_opinion_assertion(self):
-        scores = {"reversal": 0.9, "micro_scene": 0.2, "systemic_flaw": 0.1, "bridge": 0.1}
+        scores = {"reversal": 0.9, "benefit_anchor": 0.1, "micro_scene": 0.2, "contrarian": 0.1}
         result = select_title_archetypes(scores)
         self.assertIn("opinion_assertion", result)
 
     def test_micro_scene_high_recommends_scene_suspense(self):
-        scores = {"reversal": 0.2, "micro_scene": 0.9, "systemic_flaw": 0.1, "bridge": 0.1}
+        scores = {"reversal": 0.1, "benefit_anchor": 0.1, "micro_scene": 0.9, "contrarian": 0.1}
         result = select_title_archetypes(scores)
         self.assertIn("scene_suspense", result)
 
     def test_balanced_scores_returns_multiple(self):
-        scores = {"reversal": 0.6, "micro_scene": 0.5, "systemic_flaw": 0.5, "bridge": 0.6}
+        scores = {"reversal": 0.6, "benefit_anchor": 0.5, "micro_scene": 0.5, "contrarian": 0.6}
         result = select_title_archetypes(scores)
         self.assertGreaterEqual(len(result), 2, "均衡得分应至少推荐2个原型")
 
     def test_all_low_scores_still_returns_archetypes(self):
-        scores = {"reversal": 0.1, "micro_scene": 0.1, "systemic_flaw": 0.1, "bridge": 0.1}
+        scores = {"reversal": 0.1, "benefit_anchor": 0.1, "micro_scene": 0.1, "contrarian": 0.1}
         result = select_title_archetypes(scores)
         self.assertTrue(len(result) > 0, "即使得分很低也应返回默认原型")
 
     def test_returns_2_to_4_archetypes(self):
-        scores = {"reversal": 0.5, "micro_scene": 0.5, "systemic_flaw": 0.5, "bridge": 0.5}
+        scores = {"reversal": 0.5, "benefit_anchor": 0.5, "micro_scene": 0.5, "contrarian": 0.5}
         result = select_title_archetypes(scores)
         self.assertGreaterEqual(len(result), 2, "至少2个")
         self.assertLessEqual(len(result), 4, "至多4个")

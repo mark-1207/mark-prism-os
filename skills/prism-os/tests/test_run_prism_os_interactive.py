@@ -91,16 +91,13 @@ class TestRunInteractiveSelection(unittest.TestCase):
         from prism_os import run_prism_os
         result = run_prism_os("测试命题", interactive=True)
 
-        # 验证 input 被调用
-        self.assertTrue(mock_input.called, "interactive=True 时应该调用 input()")
-        # 验证 CCOS 用的是第 2 个候选（"标题2"），不是第 1 个
-        if mock_ccos.called:
-            ccos_call_args = mock_ccos.call_args
-            # 第一个位置参数应该是 title
-            if ccos_call_args.args:
-                actual_title = ccos_call_args.args[0]
-                self.assertEqual(actual_title, "标题2",
-                                 f"CCOS 应该用用户选的第 2 个候选，实际用: {actual_title}")
+        # Pipeline 用 need_input 状态暂停（不再直接调 input()）
+        # interactive=True 时，PrismPhase 返回 need_input 等用户选标题
+        self.assertEqual(result["status"], "need_input",
+                         "interactive=True 时应返回 need_input 等用户选标题")
+        # 验证候选列表存在
+        self.assertIn("candidates", result)
+        self.assertEqual(len(result["candidates"]), 3)
 
 
 # ============ T-2: interactive=False 不阻塞 ============

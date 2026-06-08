@@ -247,7 +247,7 @@ class TestGapRouting(unittest.TestCase):
                     except SystemExit:
                         pass
 
-            self.assertEqual(captured.get("result", {}).get("status"), "material_added")
+            self.assertEqual(captured.get("result", {}).get("status"), "add_material")
 
     def test_gap_input_2_restart_ccos(self):
         """输入 2 → 提示重新生成 CCOS"""

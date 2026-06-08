@@ -581,12 +581,21 @@ def generate_cognitive_module_flow(topic: str, structure: str, authorial_identit
 
 # ============ T-17: Layer 7 作者性注入 ============
 
-def inject_authorial_identity(thinking_pattern: Dict, dimension_weights: Dict, style_keywords: List[str]) -> Dict:
+def inject_authorial_identity(thinking_pattern, dimension_weights: Dict, style_keywords: List[str]) -> Dict:
     """整合数字分身数据为 Layer 7 注入格式"""
+    # thinking_pattern 可能是字符串（旧格式）或 dict（新格式）
+    if isinstance(thinking_pattern, str):
+        # 字符串格式：直接用作认知倾向
+        认知倾向 = thinking_pattern if thinking_pattern else "分析优先"
+        表达气质 = "理性深刻"
+    else:
+        认知倾向 = thinking_pattern.get("倾向", "分析优先")
+        表达气质 = thinking_pattern.get("气质", "理性深刻")
+
     return {
-        "认知倾向": thinking_pattern.get("倾向", "分析优先"),
-        "表达气质": thinking_pattern.get("气质", "理性深刻"),
-        "价值倾向": dimension_weights.get("primary", "独立思考"),
+        "认知倾向": 认知倾向,
+        "表达气质": 表达气质,
+        "价值倾向": dimension_weights.get("primary", "独立思考") if isinstance(dimension_weights, dict) else "独立思考",
         "长期母题": ", ".join(style_keywords[:3]) if style_keywords else "认知升级"
     }
 
@@ -713,7 +722,7 @@ def cognitive_outline_workflow(
     result = {
         "内容目标": content_goal.get("内容目标", "认知升级"),
         "用户动机": user_motivation.get("用户动机", "好奇"),
-        "核心认知冲突": cognitive_tension.get("认知张力", {}).get("现实是", topic),
+        "核心认知冲突": (lambda ct: ct.get("现实是", topic) if isinstance(ct, dict) else topic)(cognitive_tension.get("认知张力", {})),
         "内容立场": content_stance,
         "作者性设定": authorial_identity,
         "主结构": main_structure,

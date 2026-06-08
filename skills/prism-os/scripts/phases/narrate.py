@@ -12,7 +12,8 @@ class NarratePhase(Phase):
     def should_run(self, state: PipelineState, config: PipelineConfig) -> bool:
         return (config.include_narrate
                 and state.status != "rejected"
-                and state.ccos_outline is not None)
+                and state.ccos_outline is not None
+                and not state.ccos_failed)
 
     def execute(self, state: PipelineState, config: PipelineConfig) -> PhaseResult:
         from prism_os import _run_narrate
@@ -24,7 +25,9 @@ class NarratePhase(Phase):
 
     def display_result(self, result: PhaseResult, state: PipelineState) -> None:
         import sys
-        if result.status == "success":
+        if state.ccos_failed:
+            print(f"[Narrate] 跳过: CCOS 失败，无法生成内容", file=sys.stderr)
+        elif result.status == "success":
             wc = result.data.get("word_count", 0)
             output_file = result.data.get("output_file", "")
             print(f"[Narrate] 内容生成: {wc} 字", file=sys.stderr)

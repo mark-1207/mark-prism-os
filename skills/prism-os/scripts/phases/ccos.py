@@ -30,6 +30,7 @@ class CCOSPhase(Phase):
             else:
                 ccos_result = cognitive_outline_workflow(title, dimension, state.platform)
         except Exception as e:
+            state.ccos_failed = True
             return PhaseResult(status="success", data={"ccos_outline": None}, message=str(e))
 
         # 决策点 2：CCOS 审核
@@ -72,11 +73,15 @@ class CCOSPhase(Phase):
         elif result.status == "need_input":
             print(result.prompt, file=sys.stderr)
         else:
-            outline = result.data.get("ccos_outline", {})
-            结构 = outline.get("主结构", "")
-            推进 = outline.get("推进方式", "")
-            立场 = outline.get("内容立场", "")
-            print(f"[Phase 4.5] CCOS: 已生成（{结构} / {推进}）", file=sys.stderr)
-            if 立场:
-                print(f"        立场: {立场[:40]}", file=sys.stderr)
-            print(f"        └─ 决策点 2 等待审核", file=sys.stderr)
+            outline = result.data.get("ccos_outline")
+            if outline is None:
+                print(f"[Phase 4.5] CCOS: 生成失败（{result.message or 'outline=None'}）", file=sys.stderr)
+                print(f"        ⚠️ 后续流程继续，但 narrate 不会执行", file=sys.stderr)
+            else:
+                结构 = outline.get("主结构", "")
+                推进 = outline.get("推进方式", "")
+                立场 = outline.get("内容立场", "")
+                print(f"[Phase 4.5] CCOS: 已生成（{结构} / {推进}）", file=sys.stderr)
+                if 立场:
+                    print(f"        立场: {立场[:40]}", file=sys.stderr)
+                print(f"        └─ 决策点 2 等待审核", file=sys.stderr)

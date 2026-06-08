@@ -63,6 +63,8 @@ class PipelineState:
     # V4.0 裂缝捕捉
     crack_detections: List[dict] = field(default_factory=list)
     crack_queue_ids: List[str] = field(default_factory=list)
+    # CCOS 失败标记
+    ccos_failed: bool = False
 
     def update_from_result(self, phase_name: str, result: 'PhaseResult') -> None:
         """根据 Phase 结果更新状态"""
@@ -251,5 +253,8 @@ class PrismPipeline:
                 return self.state
 
         self.state.phase = "complete"
-        self.state.status = "success"
+        if self.state.ccos_failed:
+            self.state.status = "partial_success"
+        else:
+            self.state.status = "success"
         return self.state

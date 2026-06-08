@@ -10,7 +10,7 @@ def test_pipeline_phases_count():
     """FullPrismPipeline 应有 11 个 Phase"""
     from phases import FullPrismPipeline, PipelineConfig
     pipeline = FullPrismPipeline(PipelineConfig())
-    assert len(pipeline.phases()) == 11
+    assert len(pipeline.phases()) == 12
 
 
 def test_pipeline_state_to_dict():

@@ -17,8 +17,10 @@ class NarratePhase(Phase):
 
     def execute(self, state: PipelineState, config: PipelineConfig) -> PhaseResult:
         from prism_os import _run_narrate
+        # 优先使用选中标题，fallback 到原始输入
+        topic = state.selected_candidate.get("title", state.thesis) if state.selected_candidate else state.thesis
         try:
-            result = _run_narrate(state.thesis, state.platform)
+            result = _run_narrate(topic, state.platform)
             return PhaseResult(status="success", data=result)
         except Exception as e:
             return PhaseResult(status="failed", data={"error": str(e)}, message=str(e))

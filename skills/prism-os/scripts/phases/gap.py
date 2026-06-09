@@ -60,19 +60,9 @@ class GapPhase(Phase):
         except Exception as e:
             return PhaseResult(status="success", data={"gap_analysis": None}, message=str(e))
 
-        # Gap < threshold 硬中断
-        threshold = config.gap_auto_reject_threshold
-        readiness = gap_result.get("readiness", 0)
-        if readiness < threshold and config.interactive:
-            return PhaseResult(
-                status="rejected",
-                data={"gap_analysis": gap_result, "gap_decision": "auto_reject"},
-                message=f"就绪度 {readiness:.0%} < {threshold:.0%}，需补素材",
-            )
-
-        # 决策点 3
+        # 决策点 3（无论 readiness 多低都展示）
         if config.interactive:
-            prompt = self._format_gap_prompt(gap_result)
+            prompt = self._format_gap_prompt(gap_result, config.gap_auto_reject_threshold)
             return PhaseResult(
                 status="need_input",
                 data={"gap_analysis": gap_result, "gap_decision": "pending"},
@@ -85,7 +75,7 @@ class GapPhase(Phase):
             "gap_decision": "auto_continue",
         })
 
-    def _format_gap_prompt(self, gap_result: dict) -> str:
+    def _format_gap_prompt(self, gap_result: dict, threshold: float = 0.3) -> str:
         """格式化 Gap 决策提示"""
         score = gap_result.get("gap_score", 0)
         readiness = gap_result.get("readiness", 0)
@@ -95,6 +85,9 @@ class GapPhase(Phase):
             f"  score: {score:.2f}（{'较大' if score > 0.5 else '较小'}）",
             f"  readiness: {readiness:.0%}",
         ]
+        # 就绪度低时展示警告
+        if readiness < threshold:
+            lines.append(f"  ⚠️ 就绪度 {readiness:.0%} < {threshold:.0%}，建议补充素材")
         if missing:
             lines.append("  缺失证据:")
             for i, evidence in enumerate(missing[:5], 1):
@@ -153,4 +146,5 @@ class GapPhase(Phase):
                 missing = ga.get("missing_evidence", [])
                 missing_count = len(missing)
                 print(f"[Phase 4.6] Gap: score={score:.2f}（{'较大' if score > 0.5 else '较小'}）, 就绪度={readiness:.0%}, 缺失 {missing_count} 个证据", file=sys.stderr)
-                print(f"        └─ 决策点 3 等待决策", file=sys.stderr)
+                if decision:
+                    print(f"        └─ 决策: {decision}", file=sys.stderr)

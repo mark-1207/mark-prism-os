@@ -20,8 +20,8 @@ def test_ccos_failure_sets_ccos_failed():
     )
     config = PipelineConfig(interactive=False)
 
-    # mock CCOS 生成失败 (import 在 execute 内部)
-    with patch("cognitive_outline.generate_dual_platform_outline") as mock_ccos:
+    # mock CCOS 生成失败 (platform=wechat 调用 cognitive_outline_workflow)
+    with patch("cognitive_outline.cognitive_outline_workflow") as mock_ccos:
         mock_ccos.side_effect = Exception("LLM 调用失败")
         result = phase.execute(state, config)
 

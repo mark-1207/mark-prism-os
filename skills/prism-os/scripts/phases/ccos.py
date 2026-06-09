@@ -33,9 +33,29 @@ class CCOSPhase(Phase):
             state.ccos_failed = True
             return PhaseResult(status="success", data={"ccos_outline": None}, message=str(e))
 
+        # 校验返回类型：LLM 可能返回字符串而非 dict
+        if isinstance(ccos_result, str):
+            state.ccos_failed = True
+            return PhaseResult(status="success", data={"ccos_outline": None},
+                               message=f"CCOS 返回字符串而非 dict: {ccos_result[:100]}")
+        if ccos_result is None:
+            state.ccos_failed = True
+            return PhaseResult(status="success", data={"ccos_outline": None},
+                               message="CCOS 返回 None")
+
+        # dual platform 返回嵌套结构，提取 wechat 版本用于审核显示
+        review_outline = ccos_result
+        if "wechat_cognitive_outline" in ccos_result:
+            review_outline = ccos_result.get("wechat_cognitive_outline", ccos_result)
+        # 再次校验：内部 outline 也可能是字符串
+        if isinstance(review_outline, str):
+            state.ccos_failed = True
+            return PhaseResult(status="success", data={"ccos_outline": None},
+                               message=f"CCOS 内部 outline 为字符串: {review_outline[:100]}")
+
         # 决策点 2：CCOS 审核
         if config.interactive and not config.skip_ccos_review:
-            display = _format_ccos_review(ccos_result, title, state.platform)
+            display = _format_ccos_review(review_outline, title, state.platform)
             prompt = display + "\n请选择：\n  [c] 继续 (使用此大纲)\n  [r] 重新生成\n  [q] 退出"
             return PhaseResult(
                 status="need_input",
@@ -78,9 +98,16 @@ class CCOSPhase(Phase):
                 print(f"[Phase 4.5] CCOS: 生成失败（{result.message or 'outline=None'}）", file=sys.stderr)
                 print(f"        ⚠️ 后续流程继续，但 narrate 不会执行", file=sys.stderr)
             else:
-                结构 = outline.get("主结构", "")
-                推进 = outline.get("推进方式", "")
-                立场 = outline.get("内容立场", "")
+                # dual platform 时 outline 是嵌套结构，提取 wechat 版本
+                display_outline = outline
+                if "wechat_cognitive_outline" in outline:
+                    display_outline = outline.get("wechat_cognitive_outline", outline)
+                if not isinstance(display_outline, dict):
+                    print(f"[Phase 4.5] CCOS: outline 类型异常 ({type(display_outline).__name__})", file=sys.stderr)
+                    return
+                结构 = display_outline.get("主结构", "")
+                推进 = display_outline.get("推进方式", "")
+                立场 = display_outline.get("内容立场", "")
                 print(f"[Phase 4.5] CCOS: 已生成（{结构} / {推进}）", file=sys.stderr)
                 if 立场:
                     print(f"        立场: {立场[:40]}", file=sys.stderr)

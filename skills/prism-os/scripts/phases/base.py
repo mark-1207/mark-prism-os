@@ -40,6 +40,7 @@ class PipelineState:
     ccos_review_passed: bool = False
     gap_analysis: Optional[dict] = None
     gap_decision: Optional[str] = None
+    user_added_materials: str = ""
     logic_audit: List[dict] = field(default_factory=list)
     cognitive_journey: dict = field(default_factory=dict)
     storage_result: Optional[dict] = None
@@ -96,6 +97,8 @@ class PipelineState:
     def _set_gap(self, result: 'PhaseResult') -> None:
         self.gap_analysis = result.data.get("gap_analysis")
         self.gap_decision = result.data.get("gap_decision")
+        if "user_added_materials" in result.data:
+            self.user_added_materials = result.data["user_added_materials"]
 
     def _set_logic(self, result: 'PhaseResult') -> None:
         self.logic_audit = result.data.get("logic_audit", [])
@@ -130,6 +133,8 @@ class PipelineState:
             d["gap_analysis"] = self.gap_analysis
         if self.gap_decision:
             d["gap_decision"] = self.gap_decision
+        if self.user_added_materials:
+            d["user_added_materials"] = self.user_added_materials
         if self.logic_audit:
             d["logic_audit"] = self.logic_audit
         if self.cognitive_journey:

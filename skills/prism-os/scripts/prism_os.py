@@ -345,6 +345,7 @@ def run_prism_os_continue(user_reply: str, previous_state: dict, **kwargs) -> di
     state.ccos_review_passed = previous_state.get("ccos_review_passed", False)
     state.gap_analysis = previous_state.get("gap_analysis")
     state.gap_decision = previous_state.get("gap_decision")
+    state.user_added_materials = previous_state.get("user_added_materials", "")
 
     state.user_reply = user_reply
     state.status = "running"

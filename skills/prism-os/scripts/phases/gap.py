@@ -16,6 +16,41 @@ class GapPhase(Phase):
     def execute(self, state: PipelineState, config: PipelineConfig) -> PhaseResult:
         from gap_analysis import analyze_gap
 
+        # 素材回复检测：gap_decision=add_material 且有 user_reply 但素材尚未存储
+        if (state.gap_decision == "add_material"
+                and state.user_reply
+                and not state.user_added_materials):
+            state.user_added_materials = state.user_reply
+            # 重新跑 gap 分析（有了新素材，readiness 应提升）
+            try:
+                gap_result = analyze_gap(state.thesis, state.user_added_materials)
+            except Exception:
+                gap_result = state.gap_analysis
+            state.gap_analysis = gap_result
+            # 再次展示决策点
+            if config.interactive:
+                prompt = self._format_gap_prompt(gap_result)
+                return PhaseResult(
+                    status="need_input",
+                    data={"gap_analysis": gap_result, "gap_decision": "pending",
+                          "user_added_materials": state.user_added_materials},
+                    prompt=prompt,
+                    input_type="gap_decision",
+                )
+            return PhaseResult(status="success", data={
+                "gap_analysis": gap_result,
+                "gap_decision": "go_narrate",
+                "user_added_materials": state.user_added_materials,
+            })
+
+        # 素材已补充：跳过决策，直接继续
+        if state.user_added_materials and state.gap_decision == "add_material":
+            return PhaseResult(status="success", data={
+                "gap_analysis": state.gap_analysis,
+                "gap_decision": "go_narrate",
+                "user_added_materials": state.user_added_materials,
+            })
+
         # 如果有用户回复，处理 Gap 决策
         if state.user_reply and state.gap_analysis:
             return self._handle_user_reply(state)
@@ -88,6 +123,15 @@ class GapPhase(Phase):
             "3": "go_narrate",
         }
         decision = decision_map.get(reply, "go_narrate")
+
+        # 选 1 → need_input 让用户输入素材
+        if decision == "add_material":
+            return PhaseResult(
+                status="need_input",
+                data={"gap_analysis": gap_result, "gap_decision": decision},
+                prompt="请输入素材内容（输入空行结束）：",
+                input_type="add_material",
+            )
 
         return PhaseResult(status="success", data={
             "gap_analysis": gap_result,
